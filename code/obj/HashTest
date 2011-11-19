@@ -1,0 +1,22 @@
+var HashTest = function (objects) {
+	
+	this.hashFns = [];
+	
+	this.unhashed = [];
+	
+	for (o in objects) {
+		if (objects.hasOwnProperty(o)) {
+			this.unhashed.append(objects[o])
+		}
+	}
+	
+	this.hashed = new Array(this.unhashed.length);
+	
+	println(this.hashed.length);
+};
+
+extend(HashTest.prototype, {
+	run : function() {
+		cross([this.hashFns, this.hashFns], function () {});
+	}
+}

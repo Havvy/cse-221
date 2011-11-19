@@ -1,0 +1,30 @@
+This page documents the usage behind some paterns that are hard to understand
+by just looking at the code.
+
+Take for example, this line of code which is at the beginning of most files.
+
+common || function () {
+	LoadModule('jsstd');
+	LoadModule('jsio');
+	Exec('../code/common/common.js');
+}();
+
+You might know that "||" means or, but there is no comparison going on here!
+
+Well, or and and short-circuit in javascript (and most languages). If the left-hand side
+is true (false for and), then the right-hand side is never evaluated.
+
+Alright, that's good and all, but why is a function literal the right-hand side? It
+never gets saved anywhere, so does it get executed? And when will 'common' ever evaluate
+to true?
+
+The symbol common will evaluate to true if /common/common.js runs fully. The function
+that follows calls itself (see those parenthesis after the end of the literal?) and
+loads the two necessary modules and then executes common.js.
+
+And now you might ask, why might common.js have ran before the beginning of this code?
+Well, the answer is that when one uses "Exec", they load the file in the same 
+environment as the code that is before it.
+
+This is also the reason that top level variables are enclosed in a let statement.
+Using 'var' would pollute the global namespace with junk when you are done with it.

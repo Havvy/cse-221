@@ -1,0 +1,23 @@
+nodeTravel : function (from, to){
+	for (let i = 0; i < from.edgelist.length; i++){
+		if (from.edgelist[i].isEdgeBetween(from, to)){
+			
+		}	
+	}	
+return {to, weightTotal}
+},
+	
+	isConnected : function (nodeToFind) {
+		var flag = false, explored = [];
+		
+		var exploreFrontier = function (node) {
+			
+			if (node.hasAdjacentNode(nodeToFind)) {
+				return true;
+			} else {
+				return (true || false); // TODO
+			}
+		};
+			
+		return (true || false); // TODO
+	},

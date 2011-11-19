@@ -1,0 +1,4 @@
+Exec('../code/common/common.js');
+Exec('../code/obj/TestSet.js');
+
+printline();

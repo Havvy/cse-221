@@ -1,0 +1,77 @@
+
+//const 0
+function (stud) {
+	return 0;
+}
+
+//const 1
+function (stud) {
+	return 1;
+}
+
+//const 7
+function (stud) {
+	return 7;
+}
+
+//const 11
+function (stud) {
+	return 11;
+}
+
+//const 35
+function (stud) {
+	return 35;
+}
+
+//ASCII value of the first letter of the first (given) name.
+function (stud) {
+	return stud.firstName.charCodeAt(0);
+}
+
+//Count of letters in the first name.
+function (stud) {
+	return stud.firstName.length;
+}
+
+//Sum of the ASCII values of the letters in the given name.
+function (stud) {
+	var ret = 0;
+	for (let ix = 0; ix < stud.firstName.length; ix++) {
+		ret += stud.firstName.charCodeAt(ix);
+	}
+	return ret;
+}
+
+//Sum of the ASCII values of the letters in both names.
+function (stud) {
+	var ret = 0;
+	for (let ix = 0; ix < stud.firstName.length; ix++) {
+		ret += stud.firstName.charCodeAt(ix);
+	}
+		for (let ix = 0; ix < stud.sirName.length; ix++) {
+		ret += stud.sirName.charCodeAt(ix);
+	}
+	return ret;
+}
+
+//SID
+function (stud) {
+	return stud.SID;
+}
+
+//(SID mod 28) * 2
+function (stud) {
+	return ((stud.SID % 28) * 2);
+}
+
+//Sum of digits in the phone number
+function (stud) {
+	var ret = 0;
+	for (let ix = 0; ix < stud.phone.length; ix++) {
+		if (!isNAN(parseInt(stud.phone[ix]))) {
+			ret += parseInt(stud.phone[ix]);
+		}
+	}
+	return ret;
+}

@@ -1,0 +1,53 @@
+Graph/Node/Edge Readme
+
+--Public Interface--
+
+Graph:
+	construction:
+		Create an array of Nodes and extend it with Graph.
+
+		myGraph = [new Node(undefined, undefined, "A"),
+							 new Node(undefined, undefined, "B"),
+							 new Node(undefined, undefined, "C")]
+		extend(myGraph, Graph);
+
+	nodes():
+		Gives the array of Nodes without the methods.
+
+Edge:
+	construction:
+		myEdge = new Edge(fromNode, toNode, weights);
+
+		weights can be any object. fromNode and toNode must both be Nodes.
+
+		Edge probably shouldn't be used.
+
+Node:
+	construction:
+		myNode = new Node({adjacent : [[node1, weights1], [node2, weights2], ... [node^N, weights^N]],
+											 data : {},
+											 node: "NAME"
+                      });
+
+	accessors:
+		A node acts as a hashmap by using get() and set().
+		get:
+			myNode.get(key);
+		set:
+			myNode.set(key, value);
+		name:
+			myNode.name();
+
+			Equivalent to myNode.get("name");
+		adjacents:
+			myNode.adjacents();
+				Returns an array of adjacent nodes.
+
+	mutators:
+		Adding edges:
+			addCyclicEdge(node, weights);
+			addAcyclicEdge(node, weights);
+			addEdge(node, weights, acyclic?);
+				addEdge(node, weights) is equivalent to addCyclicEdge(node, weights);
+				addEdge(node, weights, true) is equivalent to addAcyclicEdge(node, weights);
+		

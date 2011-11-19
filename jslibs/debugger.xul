@@ -1,0 +1,842 @@
+<?xml version="1.0"?>
+<!-- ***** BEGIN LICENSE BLOCK *****
+   - Version: GNU GPL 2.0
+   - 
+   - The contents of this file are subject to the
+   - GNU General Public License Version 2.0; you may not use this file except
+   - in compliance with the License. You may obtain a copy of the License at
+   - http://www.gnu.org/licenses/gpl.html
+   - 
+   - Software distributed under the License is distributed on an "AS IS" basis,
+   - WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+   - for the specific language governing rights and limitations under the
+   - License.
+   - ***** END LICENSE BLOCK ***** -->
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="data:text/css,
+
+	#root { opacity: 0.5 }
+	#root.interactive { opacity: 1 }
+
+	#code :-moz-tree-row(selected) { background-color: transparent }
+	#code :-moz-tree-cell-text(selected) { color: inherit }
+	#code :-moz-tree-cell-text(line) { color: white; }
+	#code :-moz-tree-cell-text(code) { font-family: monospace }
+
+	#code :-moz-tree-column(line),
+	#code :-moz-tree-column(sl),
+	#code :-moz-tree-column(bp) { background-color: silver }
+
+
+	#code :-moz-tree-cell(selected, code) { background-color: #FAFAFF }
+	
+	#code :-moz-tree-cell(prevLine) { background-color: #EFE }
+	
+	#stack listitem[selected].selectedPrevLine,
+	#code :-moz-tree-cell(selectedPrevLine) { background-color: #AFA }
+	
+	#stack listitem[selected].currentLine,
+	#code :-moz-tree-cell(currentLine) { background-color: #FFA }
+	#code :-moz-tree-cell(exception) { background-color: #FAA }
+
+	#code :-moz-tree-cell(breakpoint) { background-color: red }
+	#code :-moz-tree-cell(condBreakpoint) { background-color: orange }
+	#code :-moz-tree-cell-text(breakpoint), #code :-moz-tree-cell(condBreakpoint) { color: white }
+
+	#watch :-moz-tree-cell-text(hidden) { color: #BBB }
+	#watch { margin: 2px }
+	
+	#output :-moz-tree-cell-text { font-family: monospace }
+	#output :-moz-tree-row(selected) { background-color: transparent }
+	#output :-moz-tree-cell-text(selected) { color: inherit }
+	#output { margin: 2px }
+	
+	tab { padding: 0px 8px }
+
+" type="text/css"?>
+
+<window id="window"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	xmlns:html="http://www.w3.org/1999/xhtml"
+	onload="init(event)"
+>
+	<script type="text/javascript"><![CDATA[
+		
+		function Trace() window.console && window.console.debug.apply(this, arguments);
+		
+		function Stack() { try { throw Error() } catch (ex) { return 'stack:\n'+String(ex.stack).split('\n').slice(2).join('\n') }}        		
+		
+		function $(id) document.getElementById(id);
+		
+		function Strdup(s, n) {
+
+			for ( var res = ''; n--;  res += s );
+			return res;
+		}
+		
+		function LTrim(str) str.substr(str.search(/\S/));
+		
+		function QueryPrivilege() {
+
+			netscape.security.PrivilegeManager.enablePrivilege('UniversalXPConnect UniversalBrowserRead UniversalBrowserWrite');
+			netscape.security.PrivilegeManager.revertPrivilege('UniversalXPConnect UniversalBrowserRead UniversalBrowserWrite');
+		}
+		
+		function CallWithPrivilege( privilege, fct ) {
+			
+			netscape.security.PrivilegeManager.enablePrivilege(privilege);
+			try {
+				var ret = fct.apply(this, arguments);
+			} catch(ex) {}
+			netscape.security.PrivilegeManager.revertPrivilege(privilege);
+			return ret;
+		}
+		
+		function CopyToClipboard(text) {
+			
+			var str = Components.classes['@mozilla.org/supports-string;1'].createInstance(Components.interfaces.nsISupportsString);
+			str.data = text;
+			var trans = Components.classes['@mozilla.org/widget/transferable;1'].createInstance(Components.interfaces.nsITransferable);
+			trans.addDataFlavor('text/unicode');
+			trans.setTransferData('text/unicode', str, text.length*2);
+			var clip = Components.classes['@mozilla.org/widget/clipboard;1'].createInstance(Components.interfaces.nsIClipboard);
+			clip.emptyClipboard(clip.kGlobalClipboard);
+			clip.setData(trans, null, clip.kGlobalClipboard);
+		}
+		
+		function AddProp(props, prop) {
+
+			netscape.security.PrivilegeManager.enablePrivilege('UniversalXPConnect');
+			var aserv = Components.classes["@mozilla.org/atom-service;1"].getService(Components.interfaces.nsIAtomService);
+			props.AppendElement(aserv.getAtom(prop));
+			netscape.security.PrivilegeManager.revertPrivilege('UniversalXPConnect');
+		}
+		
+		var defaultTreeView = {
+			QueryInterface: function QueryInterface(aIID) {
+				with (Components.interfaces)
+					if ( nsITreeView.equals(aIID) || nsIClassInfo.equals(aIID) || nsISupportsWeakReference.equals(aIID) || nsISupports.equals(aIID))
+						return this;
+				throw 0x80004002; // Components.results.NS_NOINTERFACE;
+			},
+			getInterfaces: function getInterfaces(count) {
+				count.value = 4;
+				with (Components.interfaces) 
+					return [ nsITreeView, nsIClassInfo, nsISupportsWeakReference, nsISupports];
+			},
+			getHelperForLanguage: function getHelperForLanguage(language) null,
+			get contractID() null,
+			get classDescription() 'myDefaultTreeView',
+			get classID() null,
+			get implementationLanguage() Components.interfaces.nsIProgrammimgLanguage.JAVASCRIPT,
+			get flags() Components.interfaces.nsIClassInfo.MAIN_THREAD_ONLY | Components.interfaces.nsIClassInfo.DOM_OBJECT,
+			setTree: function(treebox) { this.treebox = treebox; },
+			cycleHeader: function(col) {},
+			isSeparator: function(row) false,
+			isSorted: function() false,
+			getImageSrc: function(row,col) null,
+			getRowProperties: function(row,props) {},
+			getCellProperties: function(row,col,props) {},
+			getColumnProperties: function(colid,col,props) {},
+		
+			getParentIndex: function(row) -1,
+			hasNextSibling: function(row) false,
+			RowHasChild: function(row) false,
+			get rowCount() 0,
+			getCellText: function(row, column) '',
+			isContainer: function(row) false,
+			isContainerEmpty: function(row) true,
+			isContainerOpen: function(row) false,
+			toggleOpenState: function(row) {},
+			getLevel: function(row) 0,
+		};
+		
+   	
+		function TreeView() {
+			
+			this.view = [];
+		}
+		
+		TreeView.prototype = {
+			__proto__: defaultTreeView,
+			RowHasChild: function(row) {
+			
+				if ( row < this.view.length-1 )
+					return this.view[row].path.every(function(elt, i) this.view[row+1].path[i] == elt, this);
+			},
+			get rowCount() this.view.length,
+			getCellText: function(row, column) column.id == 'path' ? let (p=this.view[row].path) p[p.length-1] : this.view[row].col[column.id],
+			getCellProperties: function(row,col,props) {
+				
+				for each ( prop in this.view[row].properties )
+					AddProp(props, prop);
+			},
+			isContainer: function(row) this.view[row].hasChild,
+			isContainerEmpty: function(row) false,
+			isContainerOpen: function(row) this.RowHasChild(row),
+			getLevel: function(row) this.view[row].path.length-1,
+			toggleOpenState: function(row) {
+			
+				if ( this.RowHasChild(row) ) {
+					
+					for ( var count = 0; this.RowHasChild(row); count-- )
+						this.view.splice(row+1, 1);
+					this.treebox.rowCountChanged(row+1, count);
+				} else {
+					
+					this.onOpen(row, this.view[row].path);
+				}
+			},
+			get content() this.view,
+			set content(value) {
+			
+				this.treebox && this.treebox.rowCountChanged(0, -this.view.length);
+				this.view = value;
+				this.treebox && this.treebox.rowCountChanged(0, value.length);
+			},
+			Add: function(row, path, hasChild, col, properties) {
+			
+				this.view.splice(row+1, 0, {path:path, hasChild:hasChild, col:col||{}, properties:properties});
+				this.treebox.invalidateRow(row);
+				this.treebox.rowCountChanged(row+1, 1);
+				return row+1;
+			},
+			RemoveByIndex: function(index) {
+				
+				for ( var count = 0; this.RowHasChild(index); count-- )
+					this.view.splice(index+1, 1);
+				this.treebox.rowCountChanged(index+1, count);
+				this.view.splice(index, 1);
+				this.treebox.rowCountChanged(index, -1);
+			},
+			RemoveAll: function() {
+				
+				this.treebox.rowCountChanged(0, -this.view.length);
+				this.view.splice(0, this.view.length);
+			}
+		}
+
+   
+		SimpleRpc.xhr = new XMLHttpRequest();
+      function SimpleRpc(ip, port) {
+      
+      	this.__noSuchMethod__ = function() {
+				
+				delete this.__noSuchMethod__;
+				netscape.security.PrivilegeManager.enablePrivilege('UniversalBrowserRead'); // allow cross-domain xhr
+				try {
+					
+					SimpleRpc.xhr.open('POST', 'http://'+ip+':'+port+'/', false);
+					SimpleRpc.xhr.send(uneval(Array.slice(arguments)));
+					return eval('('+SimpleRpc.xhr.responseText+')');
+				} catch(ex) {
+					
+//					Trace(ex);
+					return new Error(ex);
+				} finally {
+				
+					netscape.security.PrivilegeManager.revertPrivilege('UniversalBrowserRead');
+					this.__noSuchMethod__ = arguments.callee;
+				}
+			}
+		}      
+      
+		function Variable() {
+			
+			this._value = undefined;
+			this._listeners = [];
+		}
+
+      Variable.prototype = {
+      	get value() this._value,
+      	set value(val) { var prevVal = this._value; this._value = val; this._FireListeners(this._listeners, val, prevVal) },
+      	Listen: function(fct) this._listeners.push(fct),
+      	__proto__:{_FireListeners: function(listeners, newVal, prevVal) { for each (lis in listeners) lis(newVal, prevVal) }}
+      }
+      
+		Variable.Atomic = function() {
+			
+			var defered = [];
+			Variable.prototype._FireListeners = function() defered.push(arguments);
+			delete Variable.prototype._FireListeners;
+			while ( defered.length ) Variable.prototype._FireListeners.apply(this, defered.shift());
+		}
+		
+// tools
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// application		
+		
+		var watchManager, stackManager, codeManager, breakpointManager, outputManager;
+
+		var programState = new Variable();
+		var programStack = new Variable();
+		var selectedStackFrame = new Variable();
+		var currentFile = new Variable();
+		var connected = new Variable();
+		
+		var [address, port] = location.hash.substr(1).split(':')
+		var debuggerRpc = new SimpleRpc(address||'127.0.0.1', port||'8009');
+
+		function init() {
+
+			QueryPrivilege();
+			outputManager = new OutputManager();
+			watchManager = new WatchManager();
+			stackManager = new StackManager();
+			codeManager = new CodeManager();
+			ConnectRetry();
+		}
+
+		function ConnectRetry() {
+
+			if ( debuggerRpc.Ping() != true ) {
+
+				$('status').label = 'connecting...';
+				setTimeout(arguments.callee, 0);
+			} else {
+				
+				UpdateState();
+			}
+		}
+		
+		function UpdateState() {
+		
+			var timeout = setTimeout(function() { $('root').className = '' }, 500);
+			
+			$('status').label = 'querying state...';
+			var s = debuggerRpc.State();
+			$('status').label = '';
+			
+			if ( s instanceof Error ) {
+
+				connected.value = false;
+				ConnectRetry();
+				return;
+			}
+
+			$('statusBreakReason').label = s.breakOrigin;
+			$('statusException').label = s.hasException ? String(s.exception) : '';
+			$('statusTime').label = s.time.toFixed(3) + 'ms';
+			Variable.Atomic(
+				connected.value = true,
+				programState.value = s,
+				programStack.value = debuggerRpc.GetStack(),
+				selectedStackFrame.value = programStack.value[s.stackFrameIndex],
+			0);
+
+			var cfg = debuggerRpc.GetConfiguration();
+			$('cmd_breakonerror').setAttribute('checked', cfg.breakOnError);
+			$('cmd_breakonexception').setAttribute('checked', cfg.breakOnException);
+			$('cmd_breakondebuggerkeyword').setAttribute('checked', cfg.breakOnDebuggerKeyword);
+			outputManager.Write('stdout', debuggerRpc.StdOut());
+			outputManager.Write('stderr', debuggerRpc.StdErr());
+			clearTimeout(timeout);
+			$('root').className = 'interactive';
+		}
+
+
+		function WatchManager() {
+			
+			var self = this;
+			var watchElt = $('watch');
+			var treeView = new TreeView();
+			CallWithPrivilege('UniversalBrowserWrite', function() { watchElt.view = treeView });
+			
+			function UpdateRow(index) {
+
+				var row = treeView.content[index];
+				var res = debuggerRpc.ExpressionInfo(row.path, selectedStackFrame.value.index);
+				row.hasChild = res.isObj;
+				row.col.string = res.string;
+				row.col.source = res.source;
+				//if ( !row.col.flags.enumerate ) row.properties = ['hidden'];
+//				if ( ' __count__ __proto__ __parent__ constructor '.indexOf(' '+row.path[row.path.length-1]+' ') != -1 )
+//					row.properties = ['hidden'];
+				treeView.treebox.invalidateRow(index);
+			}
+			
+			treeView.onOpen = function(row, path) {
+				
+				treeView.treebox.ensureRowIsVisible(row);
+				var childList = debuggerRpc.ExpressionInfo(path, selectedStackFrame.value.index, true);
+				for each ( child in childList ) {
+					
+//					if ( !child.enumerate )
+//						return;
+					treeView.Add(row++, path.concat(child.name), undefined, undefined, child.enumerate ? undefined : ['hidden']);
+					UpdateRow(row);
+				}
+			}
+			
+			this.Add = function(expression) {
+				
+				var row = treeView.Add(treeView.content.length-1, [expression]);
+				UpdateRow(row);
+				treeView.treebox.ensureRowIsVisible(row);
+				debuggerRpc.SetCookie('watch', [ row.path for each ( row in treeView.content ) ]);
+			}
+
+			this.RemoveByIndex = function(index) { 
+				
+				treeView.RemoveByIndex(index);
+				debuggerRpc.SetCookie('watch', [ row.path for each ( row in treeView.content ) ]);
+			}
+			
+			this.RemoveAll = function() {
+
+				treeView.RemoveAll();
+				debuggerRpc.SetCookie('watch', [ row.path for each ( row in treeView.content ) ]);
+			}				
+
+			this.GetValueByIndex = function(index) treeView.content[index].col.string;
+			this.GetSourceByIndex = function(index) treeView.content[index].col.source;
+
+			var currentView = 'watch';
+			var views = { auto:[] };
+			this.Show = function(type) {
+			
+				views[currentView] = treeView.content;
+				treeView.content = views[type];
+				currentView = type;
+			}
+
+			this.Connected = function(polarity) {
+				
+				if ( polarity )
+					for each ( var expression in debuggerRpc.GetCookie('watch') )
+						treeView.Add(treeView.content.length-1, expression);
+				else
+					treeView.RemoveAll();
+			}
+
+			this.Update = function() {
+			
+				for ( var i in treeView.content )
+					UpdateRow(i);
+			}
+
+			selectedStackFrame.Listen(function(newVal) self.Update(newVal));
+			connected.Listen(function(newVal, oldVal) newVal != oldVal && self.Connected(newVal));
+		}
+
+
+		function StackManager() {
+			
+			var self = this;
+			var stack = $('stack');
+			
+			this.UpdateSelection = function(stackFrame) {
+				
+				stack.setAttribute('suppressonselect', true);
+				stack.selectedIndex = stack.itemCount - 1 - stackFrame.index;
+				stack.removeAttribute('suppressonselect');
+			}
+						
+			this.UpdateContent = function() {
+
+				stack.setAttribute('suppressonselect', true);
+				stack.selectedIndex = -1;
+				stack.removeAttribute('suppressonselect');
+				while ( stack.removeItemAt(0) );
+				for ( var [i, l] in Iterator(programStack.value) ) {
+
+					var e = stack.insertItemAt(0, l.filename+':'+l.lineno+' - '+l.contextInfo, i);
+					e.style.color = let ( c = Math.floor( (1 - (i+1) / programStack.value.length) * 160 ) ) 'rgb('+c+','+c+','+c+')';
+					e.className = i == programStack.value.length-1 ? 'currentLine' : 'selectedPrevLine';
+				}
+			}
+			
+			this.Select = function( index ) {
+				
+				selectedStackFrame.value = programStack.value[index];
+			}
+			
+			this.Connected = function(polarity) {
+				
+				if ( !polarity )
+					while ( stack.removeItemAt(0) );
+			}
+			
+			selectedStackFrame.Listen(function(newVal) self.UpdateSelection(newVal));
+			programStack.Listen(function(newVal) self.UpdateContent(newVal));
+			connected.Listen(function(newVal, oldVal) newVal != oldVal && self.Connected(newVal));
+		}
+
+
+		function OutputManager() {
+			
+			var self = this;
+			var outputElt = $('output');
+			var outputs = { stdout:{content:[''], offset:0}, stderr:{content:[''], offset:0}, output:{content:[''], offset:0} };
+			var current = outputs['stdout'];
+
+			var listView = {
+				__proto__: defaultTreeView,
+				get rowCount() current.content.length,
+				getCellText: function(row, col) current.content[row]
+			}
+			
+			CallWithPrivilege('UniversalBrowserWrite', function() { outputElt.view = listView });
+
+			this.Clean = function() {
+
+				outputElt.treeBoxObject.rowCountChanged(0, -current.content.length);
+				current.content.splice(0, current.content.length, '');
+			}
+			
+			this.Show = function(name) {
+				
+				current.offset = outputElt.treeBoxObject.getFirstVisibleRow();
+				outputElt.treeBoxObject.rowCountChanged(0, -current.content.length);
+				current = outputs[name];
+				outputElt.treeBoxObject.rowCountChanged(0, current.content.length);
+				outputElt.treeBoxObject.scrollToRow(current.offset);
+			}
+	
+			this.Write = function(name, text) {
+				
+				if ( text == '' )
+					return;
+				text = text.replace(/\t/g, '    ').split('\n');
+				var out = outputs[name].content;
+				var last = out.length-1;
+				out[last] += text.shift();
+				var count = text.length;
+				while ( text.length )
+					out.push(text.shift());
+				
+				if ( outputs[name] == current ) {
+
+					outputElt.treeBoxObject.invalidateRow(last);
+					outputElt.treeBoxObject.rowCountChanged(last+1, count);
+					outputElt.treeBoxObject.ensureRowIsVisible(out[out.length-1].length ? out.length-1 : out.length-2);
+				} else {
+
+					for ( var tab = $('outputTabs').tabs.firstChild; tab; tab = tab.nextSibling ) {
+
+						if ( tab.label != name /* || outputElt.boxObject.height > 16 */ )
+							continue;
+						tab.style.color = 'red';
+						setTimeout(function() { tab.style.color = '' }, 150);
+						break;
+					}
+				}
+			}
+		}
+		
+		
+		function CodeManager() {
+			
+			var self = this;
+			var codeElt = $('code');
+
+			var reset = [];
+			
+			var cache_breakpointList = {};
+			var cache_sourceFiles = {};
+			var cache_prevStackLines = {};
+			
+			var listView = {
+				__proto__: defaultTreeView,
+				getCellText: function(row, col) {
+						
+					try {
+						var lineno = row+1;
+						switch ( col.id ) {
+							case 'line':
+								return lineno;
+							case 'bp':
+								return cache_breakpointList[lineno];
+							case 'sl':
+								return cache_prevStackLines[lineno];
+							case 'code':
+								return cache_sourceFiles[currentFile.value].source[row];
+						}
+					} catch(ex){}
+				},
+				getCellProperties: function(row, col, props) {
+
+					try {
+						var lineno = row+1;
+						switch ( col.id ) {
+							case 'line':
+							case 'bp':
+
+								if ( lineno in cache_breakpointList )
+									AddProp(props, cache_breakpointList[lineno] == 'true' ? 'breakpoint' : 'condBreakpoint');
+								break;
+							case 'code':
+
+								if ( lineno == programState.value.lineno && selectedStackFrame.value.index == programState.value.stackFrameIndex && currentFile.value == programState.value.filename ) {
+
+									AddProp(props, 'currentLine');
+									if ( programState.value.hasException )
+										AddProp(props, 'exception');
+									break;
+								}
+
+								if ( lineno in cache_prevStackLines )
+									AddProp(props, 'prevLine');
+
+								if ( lineno == selectedStackFrame.value.lineno && selectedStackFrame.value.filename == currentFile.value )
+									AddProp(props, 'selectedPrevLine');
+								break;
+						}
+					} catch(ex){}
+				}
+			}
+			
+			CallWithPrivilege('UniversalBrowserWrite', function() { codeElt.view = listView });
+		
+			
+			var row={}, col={}, childElt={}, x={}, y={}, width={}, height={};
+/*
+			codeElt.addEventListener('mousemove', function(ev) {
+				
+				codeElt.treeBoxObject.getCellAt(ev.clientX, ev.clientY, row, col, childElt);
+				if ( row.value == -1 || col.value == null || col.value.id != 'code' || childElt.value != 'text' )
+					return;
+				var text = cache_sourceFiles[currentFile.value].source[row.value];
+				codeElt.treeBoxObject.getCoordsForCellItem( row, col.value, 'text', x, y, width, height );
+				var pos = ev.clientX - codeElt.boxObject.x - x.value;
+				Trace( text[Math.floor(pos/7)], width.value )
+			}, false);
+*/
+			codeElt.addEventListener('click', function(ev) {
+				
+				codeElt.treeBoxObject.getCellAt(ev.clientX, ev.clientY, row, col, childElt);
+				if ( row.value == -1 || col.value == null || col.value.id != 'line' && col.value.id != 'bp' )
+					return;
+				lineno = row.value+1; // lineno = debuggerRpc.GetActualLineno(currentFile.value, lineno);
+
+				if ( ev.button == 2 ) {
+					
+					var condition = prompt('Breakpoint condition', cache_breakpointList[lineno] || 'true');
+					if ( condition && debuggerRpc.AddBreakpoint(currentFile.value, lineno, condition) )
+						cache_breakpointList[lineno] = condition;
+				} else {
+
+					if ( lineno in cache_breakpointList ) {
+
+						if ( debuggerRpc.RemoveBreakpoint(currentFile.value, lineno) )
+							delete cache_breakpointList[lineno];
+					} else {
+
+						if ( debuggerRpc.AddBreakpoint(currentFile.value, lineno, 'true') )
+							cache_breakpointList[lineno] = 'true';
+					}
+				}
+				codeElt.treeBoxObject.invalidateRow(lineno-1);
+			}, false);
+			
+			this.GetSourceFile = function(filename) {
+			
+				if ( filename in cache_sourceFiles )
+					return cache_sourceFiles[filename].source;
+				var codeText = debuggerRpc.GetSource(filename);
+				codeText = codeText.replace(/\t/g, '    ');
+				var codeLines = codeText.split(/\r?\n/);
+				cache_sourceFiles[filename] = { source:codeLines };
+				return codeLines;
+			}
+			
+			this.UpdateCurrentFile = function(filename, prevFilename) {
+
+				if ( filename == prevFilename )
+					return;
+
+				if ( prevFilename ) {
+					
+					cache_sourceFiles[prevFilename].viewOffset = codeElt.treeBoxObject.getFirstVisibleRow();
+					codeElt.treeBoxObject.rowCountChanged(0, -cache_sourceFiles[prevFilename].source.length);
+				}
+
+				cache_prevStackLines = {};
+				
+				if ( !filename ) {
+					
+					cache_breakpointList = {};
+					return;
+				}
+
+				this.GetSourceFile(filename);
+				cache_breakpointList = debuggerRpc.BreakpointList(filename);
+
+				for each ( var level in programStack.value )
+					if ( level.filename == filename )
+						cache_prevStackLines[level.lineno] = level.index;
+
+				codeElt.treeBoxObject.rowCountChanged(0, cache_sourceFiles[filename].source.length);
+				
+				let (offset = cache_sourceFiles[filename].viewOffset) offset && codeElt.treeBoxObject.scrollToRow(offset);
+			}
+			
+			this.Update = function(stackFrame) {
+			
+				while (reset.length) reset.shift()();
+			
+				currentFile.value = stackFrame.filename;
+				var row = stackFrame.lineno-1;
+				
+				for each ( var n in [-5,5,0] )
+					codeElt.treeBoxObject.ensureRowIsVisible(row+n);
+
+				cache_prevStackLines = {};
+				for each ( var level in programStack.value )
+					if ( level.filename == currentFile.value )
+						cache_prevStackLines[level.lineno] = level.index;
+
+				codeElt.treeBoxObject.invalidate();
+			}
+
+			this.Connected = function(polarity) {
+				
+				if ( !polarity ) {
+
+					currentFile.value = undefined;
+					cache_sourceFiles = {};
+				}
+			}
+			
+			selectedStackFrame.Listen(function(newVal) self.Update(newVal));
+			currentFile.Listen(function(newVal, prevVal) self.UpdateCurrentFile(newVal, prevVal));
+			connected.Listen(function(newVal, oldVal) newVal != oldVal && self.Connected(newVal));
+		}
+		
+		function Traceto(filename, lineno) {
+		
+			var trace = debuggerRpc.TraceTo(filename, lineno);
+			outputManager.Write('output', [ '..'+t+'ms. '+Strdup('\t',d)+LTrim(codeManager.GetSourceFile(f)[l-1]) for each ( [i, [f,l,d,t]] in Iterator(trace)) ].join('\n') );
+			UpdateState();
+		}
+		
+	]]></script>
+	
+	<commandset>
+		<command id="cmd_step" oncommand="debuggerRpc.Step(); UpdateState()"/>
+		<command id="cmd_stepover" oncommand="debuggerRpc.StepOver(); UpdateState()"/>
+		<command id="cmd_stepthrough" oncommand="debuggerRpc.StepThrough(); UpdateState()"/>
+		<command id="cmd_stepout" oncommand="debuggerRpc.StepOut(); UpdateState()"/>
+		<command id="cmd_continue" oncommand="debuggerRpc.Continue(); UpdateState()"/>
+		<command id="cmd_goto" oncommand="debuggerRpc.Goto(currentFile.value, $('code').currentIndex+1); UpdateState()"/>
+		<command id="cmd_traceto" oncommand="Traceto(currentFile.value, $('code').currentIndex+1)"/>
+		<command id="cmd_frameup" oncommand="if (selectedStackFrame.value.index > 0) stackManager.Select( selectedStackFrame.value.index - 1 )"/>
+		<command id="cmd_framedown" oncommand="if (programState.value.stackFrameIndex > selectedStackFrame.value.index) stackManager.Select( selectedStackFrame.value.index + 1 )"/>
+		<command id="cmd_breakonerror" oncommand="debuggerRpc.SetConfiguration({ breakOnError:event.explicitOriginalTarget.checked })"/>
+		<command id="cmd_breakonexception" oncommand="debuggerRpc.SetConfiguration({ breakOnException:event.explicitOriginalTarget.checked })"/>
+		<command id="cmd_breakondebuggerkeyword" oncommand="debuggerRpc.SetConfiguration({ breakOnDebuggerKeyword:event.explicitOriginalTarget.checked })"/>
+	</commandset>
+	<keyset>
+	  <key keycode="VK_F5" oncommand="window.document.documentElement.style.opacity='0.25'; window.location.reload()"/>
+	  <key keycode="VK_F8" command="cmd_continue"/>
+	  <key keycode="VK_F10" command="cmd_stepover"/>
+	  <key modifiers="shift" keycode="VK_F10" command="cmd_stepout"/>
+	  <key keycode="VK_F11" command="cmd_step"/>
+	  <key modifiers="shift" keycode="VK_F11" command="cmd_stepthrough"/>
+	  <key keycode="VK_DOWN" command="cmd_stepover"/>
+	  <key modifiers="control" keycode="VK_DOWN" command="cmd_stepthrough"/>
+	  <key keycode="VK_LEFT" command="cmd_stepout"/>
+	  <key modifiers="control" keycode="VK_LEFT" command="cmd_continue"/>
+	  <key keycode="VK_RIGHT" command="cmd_step"/>
+	  <key modifiers="shift" keycode="VK_UP" command="cmd_frameup"/>
+	  <key modifiers="shift" keycode="VK_DOWN" command="cmd_framedown"/>
+	</keyset>
+	<hbox id="root" flex="1">
+		<vbox flex="1">
+			<tree id="code" hidecolumnpicker="false" context="codeContextMenu" seltype="single" flex="1" treelines="false">
+				<menupopup id="codeContextMenu">
+					<menuitem label="goto" command="cmd_goto"/>
+					<menuitem label="trace to" command="cmd_traceto"/>
+				</menupopup>
+				<treecols>
+					<treecol id="line" label="line"/>
+					<splitter class="tree-splitter"/>
+					<treecol id="bp" label="break condition" hidden="true"/>
+					<splitter class="tree-splitter"/>
+					<treecol id="sl" label="stack level" hidden="true"/>
+					<splitter class="tree-splitter"/>
+					<treecol id="code" label="code" flex="1"/>
+				</treecols>
+				<treechildren/>
+			</tree>
+			<splitter collapse="after"><grippy/></splitter>
+			<hbox>
+				<vbox flex="1">
+					<tabbox id="outputTabs">
+						<tabs>
+							<tab label="stdout" oncommand="outputManager.Show(event.target.label); if ($('output').height == 0) $('output').height = 100"/>
+							<tab label="stderr" oncommand="outputManager.Show(event.target.label); if ($('output').height == 0) $('output').height = 100"/>
+							<tab label="output" oncommand="outputManager.Show(event.target.label); if ($('output').height == 0) $('output').height = 100"/>
+						</tabs>
+					</tabbox>
+					<tree id="output" hidecolumnpicker="true" context="outputContextMenu" seltype="single" height="25" flex="1">
+						<menupopup id="outputContextMenu">
+							<menuitem label="clean" oncommand="outputManager.Clean(event.target.label)"/>
+						</menupopup>
+						<treecols>
+							<treecol id="data" hideheader="true" flex="1"/>
+						</treecols>
+						<treechildren/>
+					</tree>
+				</vbox>
+			</hbox>
+		</vbox>
+		<splitter collapse="after"><grippy/></splitter>
+		<vbox>
+			<listbox id="stack" flex="1" onselect="if ( event.target.selectedItem ) stackManager.Select(Number(event.target.selectedItem.value))"/>
+			<splitter><grippy/></splitter>
+			<vbox flex="2">
+				<tabbox>
+					<tabs>
+						<tab label="watch" oncommand="watchManager.Show(event.target.label)"/>
+						<tab label="auto" oncommand="watchManager.Show(event.target.label)"/>
+					</tabs>
+				</tabbox>
+				<tree id="watch" hidecolumnpicker="false" context="watchContextMenu" flex="1">
+					<menupopup id="watchContextMenu">
+						<menuitem label="value to clipboard" oncommand="var idx = $('watch').currentIndex; if ( idx != -1 ) CallWithPrivilege('UniversalXPConnect', function() CopyToClipboard(watchManager.GetValueByIndex(idx)) )"/>
+						<menuitem label="source to clipboard" oncommand="var idx = $('watch').currentIndex; if ( idx != -1 ) CallWithPrivilege('UniversalXPConnect', function() CopyToClipboard(watchManager.GetSourceByIndex(idx)) )"/>
+						<menuitem label="remove" oncommand="var idx = $('watch').currentIndex; if ( idx != -1 ) watchManager.RemoveByIndex(idx);"/>
+						<menuitem label="clean" oncommand="watchManager.RemoveAll();"/>
+					</menupopup>
+					<treecols>
+						<treecol id="path" label="Expression" primary="true" flex="1"/>
+						<splitter class="tree-splitter"/>
+						<treecol id="string" label="Value" flex="5"/>
+						<splitter class="tree-splitter"/>
+						<treecol id="source" label="Source" hidden="true" flex="1"/>
+				  </treecols>
+				  <treechildren/>
+				</tree>
+			</vbox>
+			<textbox onchange="watchManager.Add(this.value); this.value=''" emptytext="&lt;new expression&gt;"/>
+		</vbox>
+	</hbox>
+	<toolbox>
+		<toolbar id="nav-toolbar">
+			<toolbarbutton label="Step" tooltiptext="F11" command="cmd_step"/>
+			<toolbarbutton label="over" tooltiptext="F10" command="cmd_stepover"/>
+			<toolbarbutton label="out" tooltiptext="Shift-F10" command="cmd_stepout"/>
+			<toolbarbutton label="through" tooltiptext="Shift-F11" command="cmd_stepthrough"/>
+			<toolbarbutton label="Continue" tooltiptext="F8" command="cmd_continue"/>
+			<toolbarbutton label="Goto" command="cmd_goto"/>
+			<toolbarseparator/>
+			<checkbox label="trap debugger keyword" command="cmd_breakondebuggerkeyword"/>
+			<checkbox label="trap errors" command="cmd_breakonerror"/>
+			<checkbox label="trap exceptions" command="cmd_breakonexception"/>
+			<toolbarseparator/>
+			<menu label="scripts" onpopupshowing="for each (var item in debuggerRpc.GetScriptList()) this.appendItem(item)" onpopuphidden="while(this.removeItemAt(0));" oncommand="currentFile.value = event.target.label">
+				<menupopup/>
+			</menu>
+			<toolbarspacer flex="1"/> 
+			<toolbarbutton style="list-style-image: url('chrome://global/skin/icons/close.png'); -moz-image-region: rect(0px, 14px, 14px, 0px)" oncommand="if (confirm('Shutdown the debugger ?')) { debuggerRpc.Shutdown(); UpdateState() }"/>
+		</toolbar>
+	</toolbox>
+	<statusbar>
+		<statusbarpanel id="status" flex="1"/>
+		<statusbarpanel id="statusException" style="color: red"/>
+		<statusbarpanel id="statusBreakReason" width="100" orient="vertical" align="center"/>
+		<statusbarpanel id="statusTime" width="100" orient="vertical" align="center"/>
+	</statusbar>
+</window>
