@@ -1,0 +1,4 @@
+fixme:wineconsole:WCUSER_NewBitmap leak
+fixme:wineconsole:WCUSER_NewBitmap leak
+err:module:load_builtin_dll failed to load .so lib for builtin L"winemp3.acm": libmpg123.so.0: cannot open shared object file: No such file or directory
+err:module:load_builtin_dll failed to load .so lib for builtin L"winemp3.acm": libmpg123.so.0: cannot open shared object file: No such file or directory
