@@ -1,0 +1,35 @@
+This is entirely for CSE 221 Data Structures at Clark College.
+
+Unless you are another student or the teacher of the class, 
+you should ignore this.
+
+The top level folder (/) contains the following folders:
+
+	jslibs: The Windows/Wine only runtime environment for this code.
+	data: Holds the data we read in the programs.
+The folder called common holds a bunch of common functions and
+	doc: Holds documentation.
+	code: Holds all of our code. Contains the
+	following subfolders:
+
+		prog:  Programs are in here.
+		common:  An ad-hoc library.
+		test: The tests for the various objects
+		obj: The data-structures themselves are stored here.
+
+		Also in the code folder is main.js. It is a shell from which you can 
+		access the rest of the files. See /doc/main.txt for more.
+
+To open the 'main shell', go to /jslibs and use 'jshost ../code/main.js'. The
+rest of the commands are input to the main shell.
+
+Programs By Assignment:
+
+[1] Stack (run shell/stack)
+[2] Vector (missing)
+[3] Sorted (broken -- Changed /obj/
+[4] Morse (run efficiency)
+[5] Binary Tree ()
+[6] Graph ()
+[7] Hash (run hashbrowns)
+[8] Polynomial (run polyCalc)
