@@ -17,7 +17,8 @@ extend(REPL.prototype, {
 		this.initialize();
 		
 		while (!this.closing) {
-			this.print(this.eval(this.read(readln())));
+			print(this.name + ">");
+			println(this.eval(this.read(readln())));
 		}
 		
 		return true;
