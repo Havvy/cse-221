@@ -6,8 +6,16 @@ extend(Array.prototype, {
 		return this[0];
 	},
 	
+	second : function () {
+		return this[1];
+	},
+	
 	last : function () {
 		return this[this.length - 1];
+	},
+	
+	penultimate : function () {
+		return this[this.length - 2];
 	},
 	
 	// BOOLEANS
