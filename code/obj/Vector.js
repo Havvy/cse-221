@@ -3,126 +3,112 @@ LoadModule('jsio');
 Exec('../code/common/common.js');
 
 var Vector = function (arr) {
-	
-	// INITIALIZER
-	var that = this;
-	var top, bottom, data = [], ref = {};
+	this.data = []
+	this.ref = {};
+	this.top = undefined;
+	this.bottom = undefined;
 	
 	if (arguments.length == 1) {
 		// Array passed in.
-		bottom = 0;
-		top = arr.length - 1;
-		data = arr;
+		this.bottom = 0;
+		this.top = arr.length - 1;
+		this.data = arr;
 		for (let ix = 0; ix < arr.length; ix++) {
-			ref[ix] = ix;
+			this.ref[ix] = ix;
 		}
 	}
-	// END INITIALIZER
+};
+
+extend(Vector.prototype, {
+	addInitial : function (input) {
+		this.data = []; //Cleans up the array.
+		this.data[0] = input;
+		this.ref[0] = this.top = this.bottom = 0;
+	},
 	
-	function addInitial (input) {
-		data = new Array(); //Cleans up the array.
-		data[0] = input;
-		ref[0] = top = bottom = 0;
-	}
+	isEmpty : function () {
+		return (this.top === undefined ? true : false);
+	},
 	
-	this.debug = function (param) {
-		switch (param) {
-			case "top":
-				return top;
-			case "bottom":
-				return bottom;
-			case "data":
-				return data;
-			case "ref":
-				return ref.toFullString();
-			default:
-				return noEscape;
-		}
-	}
-	
-	this.isEmpty = function () {
-		return (top === undefined ? true : false);
-	}
-	
-	this.size = function () {
+	size : function () {
 		if (this.isEmpty()) {
 			return 0;
 		} else {
-			return (top - bottom + 1);
+			return (this.top - this.bottom + 1);
 		}
-	}
+	},
 	
-	this.append = function (input) {
+	append : function (input) {
 		if (!this.isEmpty()) {
-			ref[++top] = data.length;
-			data[data.length] = input; // Increases length of data by one.
+			this.ref[++this.top] = this.data.length;
+			data[this.data.length] = input; // Increases length of data by one.
 		} else {
-			addInitial(input);
+			this.addInitial(input);
 		}
 		
 		return this;
-	}
+	},
 	
-	this.prepend = function (input) {
+	prepend : function (input) {
 		if (!this.isEmpty()) {
-			ref[--bottom] = data.length;
-			data[data.length] = input; // Increases length of data by one.
+			this.ref[--this.bottom] = this.data.length;
+			this.data[this.data.length] = input; // Increases length of data by one.
 		} else {
-			addInitial(input);
+			this.addInitial(input);
 		}
 		
 		return this;
-	}
+	},
 	
-	this.peek = function (maybeBottom) {
+	peek : function (maybeBottom) {
 		if (!this.isEmpty()) {
 			if (maybeBottom) {
-				return data[ref[bottom]];
+				return this.data[this.ref[this.bottom]];
 			} else {
 				// Default to peeking at the top.
-				return data[ref[top]];
+				return this.data[this.ref[this.top]];
 			}
 		} else {
 			throw new EmptyCollectionError;
 		}
-	}
+	},
 	
-	this.at = function (index) {
-		if ((top === undefined) || (index > (top - bottom)) || (index < 0)) {
+	at : function (index) {
+		if ((this.top === undefined) || (index > (this.top - this.bottom)) || (this.index < 0)) {
 			throw new RangeError("Index out of bounds");
 		} else {
-			return data[ref[bottom + index]];
+			return this.data[this.ref[this.bottom + index]];
 		}
-	}
+	},
 	
-	this.pop = function (maybeBottom) {
+	pop : function (maybeBottom) {
 		if (maybeBottom) {
-			data[ref[bottom]] = undefined;
-			delete ref[bottom++];
+			this.data[this.ref[this.bottom]] = undefined;
+			delete this.ref[this.bottom++];
 		} else {
-			data[ref[top]] = undefined;
-			delete ref[top--];
+			this.data[this.ref[this.top]] = undefined;
+			delete this.ref[this.top--];
 		}
 		
-		if (bottom > top) {
+		if (this.bottom > this.top) {
 			//Shell is empty.
-			bottom = top = undefined;
+			this.bottom = this.top = undefined;
 		}
-	}
+	},
 	
-	this.insertAt = function (position, value) {
+	insertAt : function (position, value) {
 		if (!this.isEmpty()) {
 			if ((position >= 0) && (position < this.size())) {
 				// Position is within bounds of currently defined collection.
 				
-				data[data.length] = value;
+				this.data[this.data.length] = value;
 				
 				//Shove right.
-				for (let i = top++; i >= position; i--) {
-					ref[i + 1] = ref[i];
+				for (let i = this.top++; i >= position; i--) {
+					this.ref[i + 1] = this.ref[i];
 				}
 				
-				ref[position] = data.length - 1;  // -1 because we already added value to data.
+				this.ref[position] = this.data.length - 1;  // -1 because we already added value to data.
 				
 			} else if (position === this.size()) {
 				//Position is the end of the collection. Just append.
@@ -135,34 +121,34 @@ var Vector = function (arr) {
 			//Collection is current empty.
 			if (position === 0) {
 				//Only allowed position is 0, which is the initial value.
-				addInitial(value);
+				this.addInitial(value);
 			} else {
 				throw new RangeError("Index out of bounds");
 			}
 		}
 		
 		return this;
-	}
-};
-
-Vector.prototype.peekUnder = function () {
-	return (this.peek(true));
-};
-
-Vector.prototype.peekOver = function () {
-	return (this.peek(false));
-};
-
-Vector.prototype.toString = function () {
-	var ret = "[";
+	},
 	
-	if (!this.isEmpty()) {
-		for (let i = 0; i < this.size(); i++) {
-			ret += this.at(i) + ", ";
+	peekUnder : function () {
+		return (this.peek(true));
+	},
+	
+	peekOver : function () {
+		return (this.peek(false));
+	},
+	
+	toString : function () {
+		var ret = "[";
+		
+		if (!this.isEmpty()) {
+			for (let i = 0; i < this.size(); i++) {
+				ret += this.at(i) + ", ";
+			}
+			ret = ret.slice(0, -2) + "]";
+		} else {
+			ret += "]";
 		}
-		ret = ret.slice(0, -2) + "]";
-	} else {
-		ret += "]";
+		return ret;
 	}
-	return ret;
-}
+});

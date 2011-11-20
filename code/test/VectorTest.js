@@ -64,5 +64,6 @@ let(vector = new TestSet(['obj/Vector.js'])) {
 		return (v.toString() === "[1, 2, 3]");
 	});
 	
-	vector.run()
+	//vector.run()
+	vector.urun();
 }
