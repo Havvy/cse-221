@@ -55,7 +55,8 @@ Exec("../code/common/files.js");
 // CONSTANTS
 var noEscape = "N.O.E.S.C.A.P.E.",
 NOESCAPE = "N.O.E.S.C.A.P.E.",
-CODE = "../code/";
+CODE = "../code/",
+DOC = "../doc/";
 
 // HIGHER-ORDER-FUNCTIONS "HOF"
 Exec("../code/common/comparisons.js");
