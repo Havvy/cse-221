@@ -32,7 +32,8 @@ let (poly = {}) {
 				"-h" : poly.help,
 				"q" : poly.quit,
 				"quit" : poly.quit,
-				"clear" : poly.clear
+				"clear" : poly.clear,
+				"print" : poly.print
 			};
 			
 			if (fns.hasOwnProperty(input)) {
@@ -44,7 +45,8 @@ let (poly = {}) {
 		},
 		
 		evaluator : function (fn) {
-			if (arguments[0] instanceof Polynomial) {
+			
+			if (arguments[0].constructor === Polynomial) {
 				let (polynomial = arguments[0]) {
 					poly.stack.append(polynomial);
 					poly.last = polynomial;
@@ -53,11 +55,11 @@ let (poly = {}) {
 			}
 			
 			if (fn === poly.quit) {
-				fn.apply(poly.shell);
+				fn.apply(poly.repl);
 				return "Closing Polynomial calculator.";
 			} else {
 				var ret = fn.apply(poly.stack);
-				poly.last = fn;
+				poly.last = (fn === poly.repeat) ? poly.last : fn;
 				return ret;
 			}
 		},
@@ -69,7 +71,7 @@ let (poly = {}) {
 		//STACK MODFICATION
 		
 		repeat : function () {
-			if (poly.last instanceof Polynomial) {
+			if (poly.last.constructor === Polynomial) {
 				poly.stack.append(poly.last);
 				return poly.last;
 			} else {
@@ -77,21 +79,44 @@ let (poly = {}) {
 			}
 		},
 		
-		readPoly : function () {
+		readPoly : function (input) {
+			var poly=[], ret;
 			
+			input = input.trim();
+			
+			let (splitPoly = input.split(" ")) {
+				for (let ix = 0; ix < splitPoly.length; ix++) {
+					if (splitPoly[ix] === "+" || splitPoly[ix] === "-") {
+						poly.append(splitPoly[ix] + splitPoly[ix + 1]);
+						ix++;
+					} else {
+						poly.append(splitPoly[ix]);
+					}
+				}
+			}
+			
+			poly = poly.map(function (element) {
+				return element.split("x");
+			});
+			
+			ret = new Polynomial();
+			for (let ix = 0; ix < poly.length; ix++) {
+				ret.addTerm(parseInt(poly[ix].first(), 10), 
+										(parseInt(poly[ix].second(), 10) || 0));
+			}
+			
+			return ret;
 		},
 		
 		add : function () {
 			var p1 = this.pop(), p2 = this.pop();
-			this.push(Polynomial.add(p1, p2));
-			this.push(p1.add(p2));
+			this.push(addPoly(p1, p2));
 			return this.last();
 		},
 		
 		sub : function () {
 			var p1 = this.pop(), p2 = this.pop();
-			this.push(Polynomial.subtract(p1, p2));
-			this.push(p1.subtract(p2));
+			this.push(subtractPoly(p1, p2));
 			return this.last();
 		},
 		
@@ -129,7 +154,7 @@ let (poly = {}) {
 		},
 		
 		quit : function () {
-			this.exit(0);
+			this.exit();
 		},
 		
 		print : function () {
