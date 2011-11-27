@@ -27,9 +27,10 @@ Programs By Assignment:
 
 [1] Stack (run shell/stack)
 [2] Vector (missing)
-[3] Sorted (broken -- Changed /obj/
+[3] Sorted (broken -- Changed /obj/Student.js)
 [4] Morse (run efficiency)
-[5] Binary Tree ()
-[6] Graph ()
+[5] Binary Tree (prog gettysburg)
+[6] Graph (prog routeLoad)
 [7] Hash (run hashbrowns)
-[8] Polynomial (run polyCalc)
+[8] Polynomial (shell poly)
+[9] Our Choice (n/a)
