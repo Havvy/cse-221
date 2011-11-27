@@ -31,9 +31,14 @@ let (poly = {}) {
 				"help" : poly.help,
 				"-h" : poly.help,
 				"q" : poly.quit,
+				"exit" : poly.quit,
 				"quit" : poly.quit,
 				"clear" : poly.clear,
-				"print" : poly.print
+				"print" : poly.print,
+				"show" : poly.print,
+				"dup" : poly.dup,
+				"drop" : poly.drop,
+				"swap" : poly.swap
 			};
 			
 			if (fns.hasOwnProperty(input)) {
@@ -110,7 +115,7 @@ let (poly = {}) {
 		
 		add : function () {
 			var p1 = this.pop(), p2 = this.pop();
-			this.push(addPoly(p1, p2));
+			this.push(p1.addPoly(p2));
 			return this.last();
 		},
 		
@@ -122,8 +127,7 @@ let (poly = {}) {
 		
 		mult : function () {
 			var p1 = this.pop(), p2 = this.pop();
-			this.push(Polynomial.multiply(p1, p2));
-			this.push(p1.multiply(p2));
+			this.push(multiplyPoly(p1, p2));
 			return this.last();
 		},
 		
@@ -149,6 +153,23 @@ let (poly = {}) {
 			return "Memory Cleared";
 		},
 		
+		swap : function () {
+			let last = this.pop(),
+				penultimate = this.pop(),
+			this.push(last);
+			this.push(penultimate);
+			return (this.penultimate() + "\n" + this.last());
+		},
+		
+		dup : function () {
+			this.push(this.last());
+			return this.last();
+		},
+		
+		drop : function () {
+			return this.pop();
+		},
+		
 		help : function () {
 			return get(DOC + "polynomial.txt");
 		},
@@ -165,5 +186,6 @@ let (poly = {}) {
 	});
 
 	poly.repl = new REPL("polynomial", poly.reader, poly.evaluator, 
-	poly.printer, poly.entry).run()
+	poly.printer, poly.entry)
+	poly.repl.run()
 }
