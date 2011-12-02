@@ -21,7 +21,7 @@ var Vector = function (arr) {
 
 extend(Vector.prototype, {
 	addInitial : function (input) {
-		this.data = []; //Cleans up the array.
+		this.data = []; //Reinitialize the array, removing old elements.
 		this.data[0] = input;
 		this.ref[0] = this.top = this.bottom = 0;
 	},
@@ -91,7 +91,7 @@ extend(Vector.prototype, {
 		}
 		
 		if (this.bottom > this.top) {
-			//Shell is empty.
+			//Vector is empty.
 			this.bottom = this.top = undefined;
 		}
 	},
@@ -152,3 +152,36 @@ extend(Vector.prototype, {
 		return ret;
 	}
 });
+
+/*
+var Vector = function(arr) {
+	return new ObjEx(
+		function(name, value, vec) { //add
+			if (name === vec.size().toString()) {
+				vec.append(value);
+			} else {
+				throw new UnsupportedOperationError("Can only add new elements to end of vector");
+			}
+		}, 
+		undefined, //del
+		function(name, value, vec) { //get
+			if (parseInt(name, 10).toString() === name) {
+				return vec.at(parseInt(name, 10));
+			} else {
+				return vec[name];
+			}
+		},
+		function(name, value, vec) { //set
+			if (parseInt(name, 10) === 0) {
+				vec.pop(true);
+				vec.prepend(value);
+			} else if (parseInt(name, 10) === vec.size() - 1) {
+				vec.pop();
+				vec.append(value);
+			} else {
+				throw new UnsupportedOperationError("Cannot set random elements on a vector");
+			}
+		},
+		new _Vector(arguments)
+						);
+}; */

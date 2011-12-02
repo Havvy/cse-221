@@ -149,6 +149,14 @@ let (common = new TestSet(['common/common.js'])) {
 		return (arr.equals([1, 2]) && three === 3);
 	});
 	
+	common.addTest("Psuedorandom numbers", function () {
+		Math.seedrandom("test");
+		var first = Math.random();
+		Math.seedrandom("test");
+		var second = Math.random();
+		return (first === second);
+	});
+	
 	//common.urun();
 	common.run();
 }

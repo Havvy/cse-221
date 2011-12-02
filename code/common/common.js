@@ -15,9 +15,11 @@ Exec("../code/common/classes.js");
 Exec("../code/common/object.js"); //depends upon CLASSES
 Exec("../code/common/array.js");
 Exec("../code/common/string.js");
+Exec("../code/common/random.js"); //giving a seed to Math.random()
 
 // LOAD USER-DEFINED TYPES "TYPE"
 Exec("../code/obj/EmptyCollectionError.js");
+Exec("../code/obj/UnsupportedOperationError.js");
 
 // COMMAND LINE HELPERS "CLI"
 Exec("../code/common/console.js");

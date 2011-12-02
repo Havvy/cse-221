@@ -65,5 +65,5 @@ let(vector = new TestSet(['obj/Vector.js'])) {
 	});
 	
 	//vector.run()
-	vector.urun();
+	vector.run();
 }
