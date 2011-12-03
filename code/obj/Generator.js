@@ -16,7 +16,9 @@ Exec('../code/common/common.js');
 var Generator = {
 	create : function(obj, generator) {
 		return {
-			get seed() {return obj},
+			seed : function() {
+				return obj;
+			},
 			generate : function () { return generator.apply(this.seed) }
 		};
 	}

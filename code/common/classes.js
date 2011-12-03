@@ -9,7 +9,7 @@
 function inherit(p) {
 	// PRECONDITIONS
 	if (p === null) throw TypeError();
-	var t = typeof p;
+	let t = typeof p;
 	if (t !== "object" && t !== "function") throw TypeError;
 	
 	// Return empty object with prototype of p.
@@ -29,7 +29,7 @@ function extend(o) {
 	for (let i = 1; i < arguments.length; i++) {
 		let source = arguments[i];
 		for (let prop in source) {
-			Object.defineProperty(o, prop, Object.getOwnPropertyDescriptor(source, prop));
+			o[prop] = source[prop]; // Destroys getter/setter.
 		}
 	}
 	
