@@ -1,0 +1,1 @@
+find . -name "*.jsxdr" -exec rm '{}' ';'
