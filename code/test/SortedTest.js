@@ -155,6 +155,6 @@ let (sorted = new TestSet(['/obj/Sorted.js', '/obj/Vector.js'])) {
 		return (s.toString() === "[1, 2, 3, 4, 5]");
 	});
 	
-	sorted.run()
+	sorted.urun()
 	
 }

@@ -3,112 +3,126 @@ LoadModule('jsio');
 Exec('../code/common/common.js');
 
 var Vector = function (arr) {
-	this.data = []
-	this.ref = {};
-	this.top = undefined;
-	this.bottom = undefined;
+	
+	// INITIALIZER
+	var that = this;
+	var top, bottom, data = [], ref = {};
 	
 	if (arguments.length == 1) {
 		// Array passed in.
-		this.bottom = 0;
-		this.top = arr.length - 1;
-		this.data = arr;
+		bottom = 0;
+		top = arr.length - 1;
+		data = arr;
 		for (let ix = 0; ix < arr.length; ix++) {
-			this.ref[ix] = ix;
+			ref[ix] = ix;
 		}
 	}
-};
-
-extend(Vector.prototype, {
-	addInitial : function (input) {
-		this.data = []; //Reinitialize the array, removing old elements.
-		this.data[0] = input;
-		this.ref[0] = this.top = this.bottom = 0;
-	},
+	// END INITIALIZER
 	
-	isEmpty : function () {
-		return (this.top === undefined ? true : false);
-	},
+	function addInitial (input) {
+		data = new Array(); //Cleans up the array.
+		data[0] = input;
+		ref[0] = top = bottom = 0;
+	}
 	
-	size : function () {
+	this.debug = function (param) {
+		switch (param) {
+			case "top":
+				return top;
+			case "bottom":
+				return bottom;
+			case "data":
+				return data;
+			case "ref":
+				return ref.toFullString();
+			default:
+				return noEscape;
+		}
+	}
+	
+	this.isEmpty = function () {
+		return (top === undefined ? true : false);
+	}
+	
+	this.size = function () {
 		if (this.isEmpty()) {
 			return 0;
 		} else {
-			return (this.top - this.bottom + 1);
+			return (top - bottom + 1);
 		}
-	},
+	}
 	
-	append : function (input) {
+	this.append = function (input) {
 		if (!this.isEmpty()) {
-			this.ref[++this.top] = this.data.length;
-			data[this.data.length] = input; // Increases length of data by one.
+			ref[++top] = data.length;
+			data[data.length] = input; // Increases length of data by one.
 		} else {
-			this.addInitial(input);
+			addInitial(input);
 		}
 		
 		return this;
-	},
+	}
 	
-	prepend : function (input) {
+	this.prepend = function (input) {
 		if (!this.isEmpty()) {
-			this.ref[--this.bottom] = this.data.length;
-			this.data[this.data.length] = input; // Increases length of data by one.
+			ref[--bottom] = data.length;
+			data[data.length] = input; // Increases length of data by one.
 		} else {
-			this.addInitial(input);
+			addInitial(input);
 		}
 		
 		return this;
-	},
+	}
 	
-	peek : function (maybeBottom) {
+	this.peek = function (maybeBottom) {
 		if (!this.isEmpty()) {
 			if (maybeBottom) {
-				return this.data[this.ref[this.bottom]];
+				return data[ref[bottom]];
 			} else {
 				// Default to peeking at the top.
-				return this.data[this.ref[this.top]];
+				return data[ref[top]];
 			}
 		} else {
 			throw new EmptyCollectionError;
 		}
-	},
+	}
 	
-	at : function (index) {
-		if ((this.top === undefined) || (index > (this.top - this.bottom)) || (this.index < 0)) {
+	this.at = function (index) {
+		if ((top === undefined) || (index > (top - bottom)) || (index < 0)) {
 			throw new RangeError("Index out of bounds");
 		} else {
-			return this.data[this.ref[this.bottom + index]];
+			return data[ref[bottom + index]];
 		}
-	},
+	}
 	
-	pop : function (maybeBottom) {
+	this.pop = function (maybeBottom) {
 		if (maybeBottom) {
-			this.data[this.ref[this.bottom]] = undefined;
-			delete this.ref[this.bottom++];
+			data[ref[bottom]] = undefined;
+			delete ref[bottom++];
 		} else {
-			this.data[this.ref[this.top]] = undefined;
-			delete this.ref[this.top--];
+			data[ref[top]] = undefined;
+			delete ref[top--];
 		}
 		
-		if (this.bottom > this.top) {
-			//Vector is empty.
-			this.bottom = this.top = undefined;
+		if (bottom > top) {
+			//Shell is empty.
+			bottom = top = undefined;
 		}
-	},
+	}
 	
-	insertAt : function (position, value) {
+	this.insertAt = function (position, value) {
 		if (!this.isEmpty()) {
 			if ((position >= 0) && (position < this.size())) {
 				// Position is within bounds of currently defined collection.
 				
-				this.data[this.data.length] = value;
+				data[data.length] = value;
 				
 				//Shove right.
-				for (let i = this.top++; i >= position; i--) {
-					this.ref[i + 1] = this.ref[i];
+				for (let i = top++; i >= position; i--) {
+					ref[i + 1] = ref[i];
 				}
 				
-				this.ref[position] = this.data.length - 1;  // -1 because we already added value to data.
+				ref[position] = data.length - 1;  // -1 because we already added value to data.
 				
 			} else if (position === this.size()) {
 				//Position is the end of the collection. Just append.
@@ -121,67 +135,34 @@ extend(Vector.prototype, {
 			//Collection is current empty.
 			if (position === 0) {
 				//Only allowed position is 0, which is the initial value.
-				this.addInitial(value);
+				addInitial(value);
 			} else {
 				throw new RangeError("Index out of bounds");
 			}
 		}
 		
 		return this;
-	},
-	
-	peekUnder : function () {
-		return (this.peek(true));
-	},
-	
-	peekOver : function () {
-		return (this.peek(false));
-	},
-	
-	toString : function () {
-		var ret = "[";
-		
-		if (!this.isEmpty()) {
-			for (let i = 0; i < this.size(); i++) {
-				ret += this.at(i) + ", ";
-			}
-			ret = ret.slice(0, -2) + "]";
-		} else {
-			ret += "]";
-		}
-		return ret;
 	}
-});
+};
 
-/*
-var Vector = function(arr) {
-	return new ObjEx(
-		function(name, value, vec) { //add
-			if (name === vec.size().toString()) {
-				vec.append(value);
-			} else {
-				throw new UnsupportedOperationError("Can only add new elements to end of vector");
-			}
-		}, 
-		undefined, //del
-		function(name, value, vec) { //get
-			if (parseInt(name, 10).toString() === name) {
-				return vec.at(parseInt(name, 10));
-			} else {
-				return vec[name];
-			}
-		},
-		function(name, value, vec) { //set
-			if (parseInt(name, 10) === 0) {
-				vec.pop(true);
-				vec.prepend(value);
-			} else if (parseInt(name, 10) === vec.size() - 1) {
-				vec.pop();
-				vec.append(value);
-			} else {
-				throw new UnsupportedOperationError("Cannot set random elements on a vector");
-			}
-		},
-		new _Vector(arguments)
-						);
-}; */
+Vector.prototype.peekUnder = function () {
+	return (this.peek(true));
+};
+
+Vector.prototype.peekOver = function () {
+	return (this.peek(false));
+};
+
+Vector.prototype.toString = function () {
+	var ret = "[";
+	
+	if (!this.isEmpty()) {
+		for (let i = 0; i < this.size(); i++) {
+			ret += this.at(i) + ", ";
+		}
+		ret = ret.slice(0, -2) + "]";
+	} else {
+		ret += "]";
+	}
+	return ret;
+}

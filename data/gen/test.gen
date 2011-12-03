@@ -1,0 +1,4 @@
+GENGRAPH|1|2|3
+"Text node"|E
+OtherGraph|E
+"Test node"|OtherGraph|E

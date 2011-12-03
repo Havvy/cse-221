@@ -5,24 +5,30 @@ Exec('../code/obj/Shell.js');
 
 let (main = {}) {
 	
-	// Shell-based interactions.
+	// File-based interactions.
 	
-	main.readShells = function () {
-		return Directory.List(CODE + 'prog/shell/').filter(function (file) {
-			return isFileType(file, '.js');
-		});
+	main.listScriptsInFolder = function (folder) {
+		try {
+			return Directory.List(CODE + folder + '/').filter(function (file) {
+				return isFileType(file, '.js');
+			});
+		} catch (fnfe) {
+			return [];
+		}
 	};
 	
 	main.showShells = function () {
-		this.print(main.readShells());
+		this.print(main.listScriptsInFolder('prog/shell'));
+	};
+	
+	main.scriptInFolder = function (script, folder) {
+		return main.listScriptsInFolder(folder).contains(script);
 	};
 	
 	// Running other programs.
 	
 	main.runAllTests = function () {
-		let (testFiles = Directory.List(CODE + 'test/').filter(function (file) {
-			return isFileType(file, '.js');
-		})) {
+		let (testFiles = main.listScriptsInFolder('test')) {
 			testFiles.forEach(function (file) {
 				try {
 					Exec(CODE + 'test/' + file);
@@ -34,10 +40,16 @@ let (main = {}) {
 	};
 	
 	main.runSingleTest = function (testname) {
-		try {
-			Exec(CODE + 'test/' + testname + 'Test.js');
-		} catch (e) {
-			this.print(e + "\n");
+		testname += "Test.js";
+		
+		if (main.listScriptsInFolder('test').contains(testname)) {
+			try {
+				Exec(CODE + 'test/' + testname);
+			} catch (e) {
+				this.print(e + "\n");
+			}
+		} else {
+			this.print("Tests do not exist for specified topic.");
 		}
 	};
 	
@@ -61,11 +73,17 @@ let (main = {}) {
 		}
 	};
 	
-	main.execFile = function (file) {
+	main.execScript = function (file) {
 		try {
 			Exec(CODE + file + '.js');
 		} catch (e) {
 			this.print(e);
+		}
+	};
+	
+	main.clear = function () {
+		for (let i = 0; i < 100; i++) {
+			this.print("\n");
 		}
 	};
 	
@@ -96,10 +114,11 @@ let (main = {}) {
 		shells : main.showShells,
 		run  : main.runProgram,
 		open : main.runProgram,
-		exec : main.execFile,
+		exec : main.execScript,
 		tests : main.runAllTests,
 		test : main.runSingleTest,
-		shell : main.runShell
+		shell : main.runShell,
+		clear : main.clear
 	};
 	
 	main.entry = function () {
@@ -108,10 +127,10 @@ let (main = {}) {
 	
 	main.loop = function (input) {
 		var command = getCommand(input);
-		var arguments = getAllParameters(input);
+		var args = getAllParameters(input);
 		
 		if (main.fns.hasOwnProperty(command)) {
-			main.fns[command].apply(this, [arguments]);
+			main.fns[command].apply(this, [args]);
 		} else {
 			this.print(NOESCAPE);
 		}

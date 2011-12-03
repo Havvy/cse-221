@@ -8,7 +8,7 @@
 */
 function inherit(p) {
 	// PRECONDITIONS
-	if (p === null) throw TypeError();	
+	if (p === null) throw TypeError();
 	var t = typeof p;
 	if (t !== "object" && t !== "function") throw TypeError;
 	
@@ -18,40 +18,20 @@ function inherit(p) {
 	return new f();
 }
 
+/**
+ * Extend an object with another.
+ * @mutates First parameter {@param o}
+ * @param o Object to be extended. Use a prototype to extend a set of objects.
+ * @param rest... Objects to extend with.
+ * @return Extended object.
+ */
 function extend(o) {
 	for (let i = 1; i < arguments.length; i++) {
-		var source = arguments[i];
+		let source = arguments[i];
 		for (let prop in source) {
-			o[prop] = source[prop];
+			Object.defineProperty(o, prop, Object.getOwnPropertyDescriptor(source, prop));
 		}
 	}
 	
 	return o;
-}
-	
-/**
-* A simple function for defining simple classes.
-*
-* @author David Flanagan
-* @source Javascript, the Definitive Guide 6th Edition
-*/
-function defineclass(constructor, methods, statics) {
-	if (methods) extend(constuctor.prototype, methods);
-	if (statics) extend(constuctor, statics);
-	return constructor;
-}
-
-function defineSubclas(superclass, constuctor, methods, statics) {
-	constuctor.prototype = inherit(superclass.prototype);
-	constructor.prototype.constructor = constructor;
-	
-	if (methods) {
-		extend(constructor.prototype, methods);
-	}
-	
-	if (statics) {
-		extend(constuctor, statics);
-	}
-	
-	return constructor;
 }

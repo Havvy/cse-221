@@ -144,6 +144,8 @@ let (common = new TestSet(['common/common.js'])) {
 	common.addTest("array pop", function () {
 		var arr = [1, 2, 3];
 		
+		println(arr.blah);
+		
 		var three = arr.pop();
 		
 		return (arr.equals([1, 2]) && three === 3);
