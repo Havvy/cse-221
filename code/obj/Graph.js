@@ -105,17 +105,18 @@ var Graph = {
 	
 	toString : function () {
 		var ret = "";
-		ret += "\n\nFrom [Cost, Time] To \n\n";
 		this.forEach(function (node, ix, graph) {
 			
 			ret += node.name() + ":\n";
 			
 			node.edgelist.forEach(function (edge, jx, adjacents) {
-				ret += node.name() + "-" + edge.weight + "->" + edge.destination.name() + "\n";
-				for (let ix = 0; ix < edge.weight.length; ix++) {
-					ret += (typeof edge.weight[ix]) + " ";
+				ret += node.name() + "-" + (edge.weight || "") + "->" + edge.destination.name() + "\n";
+				if (edge.weight) {
+					for (let ix = 0; ix < edge.weight.length; ix++) {
+						ret += (typeof edge.weight[ix]) + " ";
+					}
+					ret += "\n";
 				}
-				ret += "\n";
 			});
 			
 			ret += "\n";
