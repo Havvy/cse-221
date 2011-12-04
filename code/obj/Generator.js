@@ -14,69 +14,77 @@ Exec('../code/common/common.js');
 
 
 var Generator = {
-	create : function(obj, generator) {
+	create : function create(obj, generator) {
 		return {
 			seed : function() {
 				return obj;
 			},
-			generate : function () { return generator.apply(this.seed) }
+			generate : function (seed) {
+				Math.seedrandom(seed);
+				println("Seeding generator with " + seed + ".");
+				return generator.apply(this.seed()) 
+			}
 		};
 	}
 };
 
 /**
- * Assuming that any non-string/non-number is another Generating graph.
+ * Assuming that any non-string/non-number is another Generator.
  * Assuming any string is character data
  * Assuming any number means "Go this this line number where start gets line 0
  */
-
-/*
-var createGeneratingGraphFromFile = function (graphname) {
-	var generators = generators || {};
-	
-	let file = get("../data/gen/" + graphname + ".gen");
+var createGeneratingGraph = function createGeneratingGraph(graphtable, genmap) {
 	let end = new Node();
 	
-	let lines = file.split("\n")
-		.map(function (element) { return element.split("|") }));
+	graphtable.map(function (line) {
+		return line.map(function map2(node) {
 		
-	lines.map(function (line) {
-		line.map(function (node) {
+			// Catch the initial node.
 			if (node === GENGRAPH) {
 				return;
 			}
 			
+			//If the node is a number, coerce it to it.
 			if (node.toInt().toString === node) {
 				return node.toInt();
 			}
 			
+			//If the node is E, then it is the end.
 			if (node === E) {
 				return end;
 			}
 			
+			//If the beginning starts with a quote mark, it's character data.
 			if (node[0] === '"') {
 				println(node);
 				println(node.dropLastCharacter().dropFirstCharacter());
 				return node.dropLastCharacter().dropFirstCharacter();
 			}
 			
-			// Is a generator of its own.
-			if (!generators.hasOwnProperty(node)) {
-				// TODO
+			// Otherwise, is a generator of its own.
+			if (!genmap.hasOwnProperty(node)) {
+				genmap[node] = createGeneratorFromFile(node);
 			}
-			return "TODO";
-		}
-	}
+			
+			return genmap[node] | "";
+		})
+	});
+	
+	return "TODO";
 };
 
 /**
  * Assumming generators are in /data/gen/ and end in .gen
- *
-var createGeneratorFromFile = function (filename) {
+ */
+var createGeneratorFromFile = function (filename, genmap) {
+	var fns = {
+		"GENGRAPH" : createGeneratingGraph
+	};
+	
 	let file = get("../data/gen/" + graphname + ".gen");
 	let lines = file.split("\n")
-	.map(function (element) { return element.split("|") }));
-		
+	let nodes = file.splitMultiple('\n', '|');
+	let generator = fns(nodes[0][0]).apply(undefined, [nodes]);
+	genmap[filename] = generator;	
+	return generator;
 };
-
-*/

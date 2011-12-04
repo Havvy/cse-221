@@ -1,0 +1,20 @@
+===================POLYNOMIAL==================================
+
+Ryan "Bob" Dean and Ryan "Havvy" Scheel
+
+JSLIBS: http://code.google.com/p/jslibs/downloads/detail?name=jslibs_version_0.95_r2572.zip
+As always, a Windows environment is needed.
+
+Open up the main shell as per the project README (above), and type 'shell poly' to get into
+the Polynomial shell.
+
+Files (all in code folder):
+obj/Polynomial.js
+test/PolynomialTest.js  << run with 'run test/PolynomialTest' or 'test Polynomial'
+	This test case doesn't use our testing framework...
+prog/shell/poly.js
+
+Addition, subtraction, and multiplication work.  Division & Modulus do not.
+
+The shell is crude in that if you type in something in non-polynomial style, it'll add
+undefined data to the stack...

@@ -1,0 +1,90 @@
+uniqueRooms:
+
+"As you enter the next room, you trip and fall flat on your face. When you look up, you are amazed to find yourself in a forest! At first you think you are outside, but closer examination shows that the 'sun' is artificial and there are walls in the distance. Kicking at the root that tripped you up, you continue on."
+
+"It is pitch black. You are likely to be eaten by a grue."
+
+"You walk into a non-desript room. There is nothing at all notable about it."
+
+"You emerge into a well lit room. Above you, a pig with wings tied to some point on the ceiling flies in circles. What is going on here? Oh well, it doesn't concern you."
+
+"You walk into a- rocks fall, everyone dies."|gameover|
+
+|exit|
+
+genericIntro:
+
+"You walk into a into a bar. You feel like the setup to a terrible joke.". 
+
+"You stumble upon what seems to be a shrine to a long forgotten god. You hope they have forgotten you as well. Nothing good comes from dealing with lost gods."
+
+"Your next destination appears to be a temple. Monks hurry about doing their daily chores, completely ignoring you and your requests for directions."
+
+"Woah! As you walk forward, you almost plunge off a cliff. You can see the bottom, but climbing down seems impossible. Thankfully, there's a narrow ledge you can use to get to the next door."
+
+"You walk into a door. Ouch! It is a nice looking door though. After opening the door, the cave beyond it seems bland in comparison."
+
+"You emerge into a humid cavern. A thick mist obscures your vision and dampens your clothes."
+
+"You find yourself walking into a "|creature|"'s lair. Hopefully, it's not around."
+
+"You walk into a cave."
+
+"You walk into a cavern."
+
+generalDetail:
+
+"The ceiling is so high you cannot see it. You resist the urge to yell 'Echo!'"
+
+"Oh joy! The room is piled high with stacks of "|item|"s! You can hardly contain your excitement. When you go to grab one from a pile, you find that they are all super-glued together. Why would someone do this?"
+
+"Large cracks run down and along the walls. You worry about the structural integrity of the room."
+
+"Moss grows on the walls. It glows faintly, illuminating the room with a dim eerie light."
+
+"The walls are studded with magnificent crystals! You consider breaking one off to keep, but have nothing with which to do so."
+
+"It would appear you are not the first to be lost in this... place. You find a skeleton resting against a wall, clutching a whip and wearing a fedora."
+
+"A "|creature|" occupies the middle of the room. It appears to be asleep. Thankfully, it doesn't notice your presence.
+
+
+
+
+generalSense:
+
+"You feel as if someone or something is watching you."
+
+"You hear growling coming from far away. No, wait, that's your stomach."
+
+"You hear voices, chanting in a language you don't understand. Looking for the source, you find nothing."
+
+"The room smells faintly of chocolate. And peanut butter. Two great smells that go great together!"
+
+"You get a sudden feeling of dread. Or gas. Either way, you feel you should leave this place quickly."
+
+"You see what looks to be glowing eyes in your peripheral vision, but when you turn to look they're gone. Ahh, there they are again!"
+
+"You briefly wonder if your sanity is slipping, then laugh loudly for a good minute and continue on."
+
+"You are struck with a sudden feeling of panic. Did you leave the oven on?!"
+
+"A sudden flash of light draws your attention to a(n) "|item|" in the middle of the room. Was that there before?"
+
+"Suddenly, a piercing headache strikes you, then is gone as quickly as it came."
+
+
+
+
+
+creatureAttack: "Suddenly, a "|creature|" attacks! "|creatureAttack|
+
+
+
+"Thankfully, it's so dark that it misses and smacks into a wall, knocking itself out. You carefully walk around and into the next room."
+
+"You panic, turning around and running back the way you came. But this doesn't look like the room you came from..."
+
+"It yells mean, hurtful words at you as you walk past. You put on a proud face and try to act like you don't care, but you're not fooling anyone."
+
+"You direct your army of tiny "|creature|"s at the enemy (you know you had one of those, right?) as a distraction as you sneak past."

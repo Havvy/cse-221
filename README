@@ -16,6 +16,7 @@ The folder called common holds a bunch of common functions and
 		common:  An ad-hoc library.
 		test: The tests for the various objects
 		obj: The data-structures themselves are stored here.
+		wip: "Work in progress" (uncategorized code)
 
 		Also in the code folder is main.js. It is a shell from which you can 
 		access the rest of the files. See /doc/main.txt for more.
@@ -35,4 +36,4 @@ Programs By Assignment:
 [8] Polynomial (shell poly)
 [9] Our Choice (n/a)
 
-There are other programs. They are for testing out various language features.
+There are other files in the code folder. They are for testing out various language features.

@@ -39,16 +39,13 @@ let (common = new TestSet(['common/common.js'])) {
 	});
 	
 	common.addTest("Two unequal length arrays are unequal", function () {
-		var a1 = [1, 1, 1], a2 = [1, 1];
-		
+		let a1 = [1, 1, 1], a2 = [1, 1];		
 		return !(a1.equals(a2) || a2.equals(a1));
 	});
 	
 	common.addTest("remove duplicates from array", function () {
-		var array = [1, 1, 1, 2, 3];
-		
-		var pure = array.removeDuplicates();
-		
+		let array = [1, 1, 1, 2, 3];		
+		let pure = array.removeDuplicates();		
 		return (pure.equals([1, 2, 3]));
 	});
 	
@@ -142,12 +139,8 @@ let (common = new TestSet(['common/common.js'])) {
 	});
 	
 	common.addTest("array pop", function () {
-		var arr = [1, 2, 3];
-		
-		println(arr.blah);
-		
-		var three = arr.pop();
-		
+		let arr = [1, 2, 3];		
+		let three = arr.pop();		
 		return (arr.equals([1, 2]) && three === 3);
 	});
 	
@@ -157,6 +150,12 @@ let (common = new TestSet(['common/common.js'])) {
 		Math.seedrandom("test");
 		var second = Math.random();
 		return (first === second);
+	});
+	
+	common.addTest("split multiple on Strings", function () {
+		let str = "ababacababacababa";
+		let strPrime = str.splitMultiple("c", "b");		
+		return strPrime.equals([['a', 'a', 'a'], ['a', 'a', 'a'], ['a', 'a', 'a']]);
 	});
 	
 	//common.urun();

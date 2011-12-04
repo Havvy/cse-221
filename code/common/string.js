@@ -1,9 +1,30 @@
 extend(String.prototype, {
+	
+	// ACCESSORS
+	
+	first : function () {
+		return this[0];
+	},
+	
+	second : function () {
+		return this[1];
+	},
+	
+	last : function () {
+		return this[this.length - 1];
+	},
+	
+	penultimate : function () {
+		return this[this.length - 2];
+	},
+	
+	// Booleans
+	
 	isEmpty : function () {
-	return (this.length === 0);
+		return (this.length === 0);
 	},
 
-	// Removing change of executing "parseInt("066")"
+	// Removing chance of executing "parseInt("066")"
 	toInt : function () {
 		return parseInt(this, 10);
 	},
@@ -12,6 +33,7 @@ extend(String.prototype, {
 		return parseFloat(this);
 	},
 
+	// Mutators
 	/**
 	* 
 	* @author Shi Chuan
@@ -30,5 +52,26 @@ extend(String.prototype, {
 	
 	dropFirstChar : function () {
 		return this.substring(1, this.length-1);
+	},
+	
+	// Other...
+	splitMultiple : function () {
+		if (arguments.length !== 0) {
+			let args = [];
+			let temp = this;
+			
+			// Coerce arguments into an array.
+			for (let ix = 0; ix < arguments.length; ix++) {
+				args.push(arguments[ix]);
+			}
+			
+			temp = temp.split(args.first());
+			for (let ix = 0; ix < temp.length; ix++) {
+				temp[ix] = String.prototype.splitMultiple.apply(temp[ix], args.rest());
+			}
+			return temp;
+		} else {
+			return this;
+		}
 	}
 });
