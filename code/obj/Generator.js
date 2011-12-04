@@ -1,6 +1,8 @@
 LoadModule('jsstd');
 LoadModule('jsio');
 Exec('../code/common/common.js');
+Exec('../code/obj/Node.js');
+Exec('../code/obj/Graph.js');
 
 /**
  * @term Generator is an object which wraps another object, and has
@@ -14,15 +16,17 @@ Exec('../code/common/common.js');
 
 
 var Generator = {
-	create : function create(obj, generator) {
+	create : function create(base, generator) {
 		return {
-			seed : function() {
-				return obj;
+			base : function() {
+				return base;
 			},
 			generate : function (seed) {
 				Math.seedrandom(seed);
-				println("Seeding generator with " + seed + ".");
-				return generator.apply(this.seed()) 
+				return generator.apply(this.base())
+			},
+			toString : function () {
+				return "[Generator generator]";
 			}
 		};
 	}
@@ -33,41 +37,83 @@ var Generator = {
  * Assuming any string is character data
  * Assuming any number means "Go this this line number where start gets line 0
  */
-var createGeneratingGraph = function createGeneratingGraph(graphtable, genmap) {
-	let end = new Node();
+var addGeneratingGraph = function createGeneratingGraph(graphtable, genmap) {
+	printline();
+	printval("TABLE", graphtable);
+	printval("MAP", genmap, true);
 	
-	graphtable.map(function (line) {
-		return line.map(function map2(node) {
+	let start = new Node({name:"Start"}), end = new Node({name:"End"});
+	
+	function createNodes(graphtable, genmap) {
+		println("Creating nodes from graphtable");
+		return graphtable.map(function (line) {
+			return line.map(function map2(node) {
+			
+				printval("\tNODE", node);
+				
+				// Catch the initial node.
+				if (node === "GENGRAPH") {
+					println("\t\tNode is GENGRAPH!");
+					return start;
+				} else {
+					println("\t\tNode not GENGRAPH");
+				}
+				
+				//If the node is a number, coerce it to it.
+				if (node.toInt().toString() === node) {
+					println("\t\tNode is a number.");
+					return node.toInt();
+				} else {
+					println("\t\tNode is not a number.");
+				}
+				
+				//If the node is E, then it is the end.
+				if (node === "E") {
+					println("\t\tNode is the end.");
+					return end;
+				} else {
+					println("\t\tNode is not the end.");
+				}
+				
+				//If the beginning starts with a quote mark, it's character data.
+				if (node[0] === '"') {
+					println("\t\tNode is a string.");
+					return node.dropLastChar().dropFirstChar();
+				} else {
+					println("\t\tNode is not a string.");
+				}
+				
+				println("\t\tTherefore, node is a graph.");
+				// Otherwise, is a generator of its own.
+				if (!genmap.hasOwnProperty(node)) {
+					genmap[node] = createGeneratorFromFile(node);
+				}
+				return genmap[node];
+			})
+		});
+	}
+	
+	function createGraph(nodes) {
+		var graph = [start];
 		
-			// Catch the initial node.
-			if (node === GENGRAPH) {
-				return;
-			}
-			
-			//If the node is a number, coerce it to it.
-			if (node.toInt().toString === node) {
-				return node.toInt();
-			}
-			
-			//If the node is E, then it is the end.
-			if (node === E) {
-				return end;
-			}
-			
-			//If the beginning starts with a quote mark, it's character data.
-			if (node[0] === '"') {
-				println(node);
-				println(node.dropLastCharacter().dropFirstCharacter());
-				return node.dropLastCharacter().dropFirstCharacter();
-			}
-			
-			// Otherwise, is a generator of its own.
-			if (!genmap.hasOwnProperty(node)) {
-				genmap[node] = createGeneratorFromFile(node);
-			}
-			
-			return genmap[node] | "";
-		})
+		for (let lx = 1; lx < nodes.length; lx++) {
+			graph.push(new Node({
+				data : nodes[lx].first(),
+				name : lx.toString()
+			}));
+		}
+		
+		graph.push(end);
+		
+		printval("Graph", graph);
+	}
+	
+	let nodes = createNodes(graphtable, genmap);
+	printline();
+	printval("nodes", nodes);
+	let graph = createGraph(nodes);
+	let generator = Generator.create(graph, function () {
+		// TODO Random walk through the maze. TODO //
 	});
 	
 	return "TODO";
@@ -77,14 +123,24 @@ var createGeneratingGraph = function createGeneratingGraph(graphtable, genmap) {
  * Assumming generators are in /data/gen/ and end in .gen
  */
 var createGeneratorFromFile = function (filename, genmap) {
+	printline();
 	var fns = {
-		"GENGRAPH" : createGeneratingGraph
+		"GENGRAPH" : addGeneratingGraph
 	};
 	
-	let file = get("../data/gen/" + graphname + ".gen");
-	let lines = file.split("\n")
+	let file = get("../data/gen/" + filename + ".gen");
+	printval("file type", typeof file);
 	let nodes = file.splitMultiple('\n', '|');
-	let generator = fns(nodes[0][0]).apply(undefined, [nodes]);
+	printval("nodes[0][0]", nodes[0][0]);
+	printval("type[0][0]", typeof nodes[0][0]);
+	for (let ix = 0; ix < nodes.length; ix++) {
+		for (let jx = 0; jx < nodes[ix].length; jx++) {
+			if (typeof nodes[ix][jx] !== "object") {
+				println("nodes[" + ix + "][" + jx + "] is of type " + (typeof nodes[ix][jx]) + ".");
+			}
+		}
+	}
+	let generator = fns[nodes[0][0]].apply(undefined, [nodes, genmap]);
 	genmap[filename] = generator;	
 	return generator;
 };

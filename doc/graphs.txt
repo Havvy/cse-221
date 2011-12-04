@@ -43,10 +43,12 @@ Edge:
 
 Node:
 	construction:
-		myNode = new Node({adjacent : [[node1, weights1], [node2, weights2], ... [node^N, weights^N]],
+		myNode = new Node({adjacent : [[node_1, weights_1], [node_2, weights_2], ... [node_n, weights_n]],
 											 data : {},
 											 name: "NAME"
                       });
+
+		name is placed in data object, and can be used for creating a hashmap of nodes.
 
 	accessors:
 		A node acts as a hashmap by using get() and set().

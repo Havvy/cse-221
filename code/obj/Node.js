@@ -29,8 +29,13 @@ var Node = function (obj) {
 	}
 	
 	this.data = obj.data || {};
+	printval("Node.js data", this.data, true);
 	
+	printval("obj name", obj.name);
+	printval("data name", this.data.name);
+	printval("test", this.data.name || obj.name);
 	this.data.name = this.data.name || obj.name || ("anonNode" + (counter++));
+	printval("Node.js name", this.data.name);
 };
 
 extend(Node.prototype, {

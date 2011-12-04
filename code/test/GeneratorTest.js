@@ -15,13 +15,20 @@ let(gen = new TestSet(['obj/Generator.js'])) {
 	});
 	
 	gen.addTest("Generate same results on a recall with same seed.", function () {
-		Math.seedrandom("test");
-		let g = Generator.create(Math.random, function() {
-			return this();
+		let g = Generator.create({}, function() {
+			return Math.random();
 		});
 		let generated = [g.generate("test"), g.generate("test")];
-		println(generated);
 		return generated[0] === generated[1];
+	});
+	
+	gen.addTest("Generate simple GenGraph.", function () {
+		let g = {};
+		createGeneratorFromFile('simpleTest', g);
+		
+		let generated = g['simpleTest'].generate("_");
+		
+		return (generated === "End");
 	});
 
 	//gen.run();

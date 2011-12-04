@@ -44,8 +44,8 @@ let (common = new TestSet(['common/common.js'])) {
 	});
 	
 	common.addTest("remove duplicates from array", function () {
-		let array = [1, 1, 1, 2, 3];		
-		let pure = array.removeDuplicates();		
+		let array = [1, 1, 1, 2, 3];
+		let pure = array.removeDuplicates();
 		return (pure.equals([1, 2, 3]));
 	});
 	

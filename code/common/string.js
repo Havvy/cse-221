@@ -51,7 +51,7 @@ extend(String.prototype, {
 	},
 	
 	dropFirstChar : function () {
-		return this.substring(1, this.length-1);
+		return this.substring(1, this.length);
 	},
 	
 	// Other...
@@ -71,7 +71,7 @@ extend(String.prototype, {
 			}
 			return temp;
 		} else {
-			return this;
+			return this.toString(); //for some reason, toString() is required here.
 		}
 	}
 });

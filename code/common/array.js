@@ -21,14 +21,14 @@ extend(Array.prototype, {
 	// BOOLEANS
 	
 	/**
-	*
-	* someArray.contains(value);
-	*
-	*/
-	contains : function(obj) {
+	 * Does this array contain this value?
+	 * @param value
+	 * @return true if {@param value} is within array
+	 */
+	contains : function(value) {
 		var i = this.length;
 		while (i--) {
-			if (this[i] === obj) {
+			if (this[i] === value) {
 				return true;
 			}
 		}
@@ -36,13 +36,15 @@ extend(Array.prototype, {
 	},
 	
 	equals : function (compared) {
-		if (this.length !== compared.length) return false;
-			 
-			 for (let i = 0; i < this.length; i++) {
-				 if (this[i] !== compared[i]) return false;
-			 }
-			 
-			 return true;
+		if (this.length !== compared.length) {
+			return false;
+		}
+		
+		for (let i = 0; i < this.length; i++) {
+			if (this[i] !== compared[i]) return false;
+		}
+		
+		return true;
 	},
 	
 	isEmpty : function () {
@@ -59,7 +61,7 @@ extend(Array.prototype, {
 	push : function (value) {
 		this.append(value);
 	},
-
+	
 	
 	insert : function (loc, val) {
 		for (let i = this.length; i > loc; i--) {

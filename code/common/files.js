@@ -6,7 +6,7 @@ function get (location) {
 			file.Open( File.RDONLY );
 			contents = (file.Read());
 			file.Close();
-			return contents;
+			return contents.toString();
 		}
 		else {
 			return "";

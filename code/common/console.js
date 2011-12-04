@@ -25,7 +25,20 @@ function printline () {
 }
 
 function printval (name, val, isFullString) {
-	Print(name + ": " + (isFullString ? val.toFullString() : val) + '\n');
+	Print(name + ": ");
+	if (val) {
+		if (typeof val === "string") {
+			Print("\"" + val + "\"\n")
+		} else {
+			Print((isFullString ? val.toFullString() : val) + '\n');
+		}
+	} else {
+		if (val === false) {
+			Print("false\n");
+		} else {
+			Print("nil\n");
+		}
+	}
 }
 
 function readln () {
