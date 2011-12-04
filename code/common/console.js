@@ -14,9 +14,7 @@ function println (string) {
 }
 
 /**
-*
 * prints 70 dashes to stdout followed by a newline.
-*
 */
 function printline () {
 	var line = "";
@@ -24,6 +22,10 @@ function printline () {
 		line += "-";
 	}
 	Print(line + "\n");
+}
+
+function printval (name, val, isFullString) {
+	Print(name + ": " + (isFullString ? val.toFullString() : val) + '\n');
 }
 
 function readln () {
