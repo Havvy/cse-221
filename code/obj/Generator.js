@@ -59,7 +59,7 @@ var addGeneratingGraph = function createGeneratingGraph(graphtable, genmap) {
 					println("\t\tNode not GENGRAPH");
 				}
 				
-				//If the node is a number, coerce it to it.
+				//If the node is a number, coerce it to a number.
 				if (node.toInt().toString() === node) {
 					println("\t\tNode is a number.");
 					return node.toInt();
@@ -83,7 +83,7 @@ var addGeneratingGraph = function createGeneratingGraph(graphtable, genmap) {
 					println("\t\tNode is not a string.");
 				}
 				
-				println("\t\tTherefore, node is a graph.");
+				println("\t\tTherefore, node is another generator of some type.");
 				// Otherwise, is a generator of its own.
 				if (!genmap.hasOwnProperty(node)) {
 					genmap[node] = createGeneratorFromFile(node);
@@ -104,19 +104,65 @@ var addGeneratingGraph = function createGeneratingGraph(graphtable, genmap) {
 		}
 		
 		graph.push(end);
-		
 		printval("Graph", graph);
+		
+		for (let ix = 0; ix < nodes.length; ix++) {
+			let node = graph[ix];
+			printval("line", nodes[ix]);
+			for (let jx = 1; jx < nodes[ix].length; jx++) {
+				let nextVal = nodes[ix][jx]
+				printval("nextVal", nextVal);
+				if (typeof nextVal=== "number") {
+					println("\tValue is a number.");
+					println("\tAdding edge between " + ix + " and " + nodes[ix][jx]);
+					graph[ix].addAcyclicEdge(graph[nextVal]);
+					println("\tAdded");
+				} else if (nextVal === end) {
+					println("\tValue is the end.");
+					node.addAcyclicEdge(end);
+				} else {
+					println("Value is a generator.");
+					let newNode = new Node({data : nextVal})
+					graph.push(newNode);
+					node.addAcyclicEdge(newNode);
+					node = nextVal;
+				}
+			}
+		}
+		
+		printline();
+		return extend(graph, Graph);
 	}
+	
+	//d6 := Math.ceil(Math.random() * 6);
+	//dN := Math.ceil(Math.random() * N);
 	
 	let nodes = createNodes(graphtable, genmap);
 	printline();
 	printval("nodes", nodes);
 	let graph = createGraph(nodes);
+	printval("final graph", graph);
 	let generator = Generator.create(graph, function () {
-		// TODO Random walk through the maze. TODO //
+		var theGeneration = ""; 
+		let currentNode = start;
+		while (currentNode != end){
+			printval("Current", currentNode);
+			let adjacents = currentNode.adjacents();
+			// Adjacents := the list of nodes currentNode has an edge to.
+			printval("\tadjacents", adjacents); 
+			if (currentNode != start){
+				theGeneration += "" + currentNode.data;
+			}
+			currentNode = adjacents[Math.floor(Math.random() * adjacents.length)];
+			
+			
+		}
+		printval("string", theGeneration);
+		printline();
+		return theGeneration;
 	});
-	
-	return "TODO";
+	printline();
+	return generator;
 };
 
 /**
@@ -126,21 +172,13 @@ var createGeneratorFromFile = function (filename, genmap) {
 	printline();
 	var fns = {
 		"GENGRAPH" : addGeneratingGraph
+		//"GENLIST" : addGeneratingList
 	};
 	
 	let file = get("../data/gen/" + filename + ".gen");
-	printval("file type", typeof file);
-	let nodes = file.splitMultiple('\n', '|');
-	printval("nodes[0][0]", nodes[0][0]);
-	printval("type[0][0]", typeof nodes[0][0]);
-	for (let ix = 0; ix < nodes.length; ix++) {
-		for (let jx = 0; jx < nodes[ix].length; jx++) {
-			if (typeof nodes[ix][jx] !== "object") {
-				println("nodes[" + ix + "][" + jx + "] is of type " + (typeof nodes[ix][jx]) + ".");
-			}
-		}
-	}
-	let generator = fns[nodes[0][0]].apply(undefined, [nodes, genmap]);
+	let graphtable = file.splitMultiple('\n', '|');
+	printval("graphtable", graphtable);
+	let generator = fns[graphtable[0][0]](graphtable, genmap);
 	genmap[filename] = generator;	
 	return generator;
 };

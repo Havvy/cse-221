@@ -17,25 +17,19 @@ extend(Edge.prototype, {
 	}
 });
 
-var Node = function (obj) {
+var Node = function (parameters) {
 
 	var counter = counter || 0;
 	
 	this.edgelist = [];
-	if (obj.adjacent && obj.adjacent.length) {
-		for (let i = 0; i < obj.adjacent.length; i++) {
-			this.edgelist[i] = new Edge(this, obj.adjacent[i][0], obj.adjacent[i][1]);
+	if (parameters.adjacent && parameters.adjacent.length) {
+		for (let i = 0; i < parameters.adjacent.length; i++) {
+			this.edgelist[i] = new Edge(this, parameters.adjacent[i][0], parameters.adjacent[i][1]);
 		}
 	}
 	
-	this.data = obj.data || {};
-	printval("Node.js data", this.data, true);
-	
-	printval("obj name", obj.name);
-	printval("data name", this.data.name);
-	printval("test", this.data.name || obj.name);
-	this.data.name = this.data.name || obj.name || ("anonNode" + (counter++));
-	printval("Node.js name", this.data.name);
+	this.data = parameters.data || {};
+	this.identifier = this.data.name || parameters.name || ("anonymous" + counter++);
 };
 
 extend(Node.prototype, {
@@ -72,7 +66,7 @@ extend(Node.prototype, {
 	},
 	
 	name : function () {
-		return this.data["name"];
+		return this.identifier;
 	},
 	
 	// Mutators
@@ -135,7 +129,7 @@ extend(Node.prototype, {
 	},
 	
 	toString : function () {
-		return this.name();
+		return "[Node " + this.name() + "]";
 	}
 	
 });

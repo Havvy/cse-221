@@ -1,0 +1,34 @@
+Graph:
+	shortestPath
+	isEdgeBetween
+	edgeBetween
+	hashGraph
+	nodeWithName
+	nodes
+	toString
+
+Edge:
+	isEdgeBetween
+	toString
+
+Node:
+	iterate (avoid..)
+	adjacents - Get all adjacent edges.
+	get
+	set
+	name
+	addAcyclicEdge
+	addCyclicEdge
+	addEdge
+	isLeaf
+	isConnected
+	hasAdjacentNode
+	edgeCount
+	toString
+
+Generator:
+	generate
+
+Math:
+	random
+	seedrandom

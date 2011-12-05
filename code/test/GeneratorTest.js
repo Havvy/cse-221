@@ -28,7 +28,7 @@ let(gen = new TestSet(['obj/Generator.js'])) {
 		
 		let generated = g['simpleTest'].generate("_");
 		
-		return (generated === "End");
+		return (generated === "aStrbStr");
 	});
 
 	//gen.run();
