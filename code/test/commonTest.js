@@ -154,8 +154,12 @@ let (common = new TestSet(['common/common.js'])) {
 	
 	common.addTest("split multiple on Strings", function () {
 		let str = "ababacababacababa";
-		let strPrime = str.splitMultiple("c", "b");		
+		let strPrime = str.splitMultiple("c", "b");
 		return strPrime.equals([['a', 'a', 'a'], ['a', 'a', 'a'], ['a', 'a', 'a']]);
+	});
+	
+	common.addTest("string is empty", function () {
+		return "".isEmpty();
 	});
 	
 	//common.urun();

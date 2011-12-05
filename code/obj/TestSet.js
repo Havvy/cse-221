@@ -16,6 +16,7 @@ TestSet.prototype.run = function () {
 	});
 	} catch (e) {
 		println("Unable to run tests for " + this.name);
+		return;
 	}
 
 	println("Running tests for " + this.name);

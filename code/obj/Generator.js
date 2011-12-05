@@ -37,7 +37,7 @@ var Generator = {
  * Assuming any string is character data
  * Assuming any number means "Go this this line number where start gets line 0
  */
-var addGeneratingGraph = function createGeneratingGraph(graphtable, genmap) {
+var addGeneratingGraph = function (graphtable, genmap) {
 	printline();
 	printval("TABLE", graphtable);
 	printval("MAP", genmap, true);

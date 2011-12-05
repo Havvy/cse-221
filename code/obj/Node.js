@@ -1,6 +1,6 @@
-var Edge = function (from, destination, weight) {
+var Edge = function (from, to, weight) {
 	this.weight = weight;
-	this.destination = destination;
+	this.to = to;
 	this.from = from;
 }
 
@@ -9,11 +9,11 @@ extend(Edge.prototype, {
 	// BOOLEANS
 	
 	isEdgeBetween : function (from, to) {
-		return (this.from === from && this.destination === to);
+		return (this.from === from && this.to === to);
 	},
 
 	toString : function () {
-		return (this.from + "-" + this.weight + "->" + this.destination);
+		return (this.from + "-" + this.weight + "->" + this.to);
 	}
 });
 
@@ -51,7 +51,7 @@ extend(Node.prototype, {
 		var adjacentlist = [];
 		
 		for (let ix = 0; ix < this.edgeCount(); ix++) {
-			adjacentlist[ix] = this.edgelist[ix].destination;
+			adjacentlist[ix] = this.edgelist[ix].to;
 		}
 		
 		return adjacentlist

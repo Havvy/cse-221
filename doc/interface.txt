@@ -1,40 +1,183 @@
-Global:
-	String get(String filepath) Gets the contents of the file specified at path
-		relative to /jslibs/.
+{Methods}
 
-Graph:
-	Boolean isEdgeBetween(Node from, Node to)
-	Edge edgeBetween(Node from, Node to)
-	Object hashGraph()
-	Node nodeWithName(String name)
-	Array nodes()
-	Array shortestPath(Node from, Node to)
-	Array randomWalk(Node from, Node to)
+These are methods on the various objects either built-in to javascript,
+or added through the objects folder.
+
+Object:
+	<static>? <mutates>? <return> <name>(<parameter>*) <Description>
+
+<static>: If Object.<name> can be called without a specific object.
+<mutates>: If object is mutated by this method.
+<return>: Return <type> of method/function.
+<name>: Name of method.
+<paramter>: <type> <name>
+<type>:
+	jsval:  Any type
+	this:  The object that the method was called with.
+	<type>[]:  An array of type <type>
+	<type>[]*:  An arbitrary-dimensional array of type <type>
+
+-------------------------------------------------------------------------------
+(common)
+
+Object
+	Boolean isElementOf(jsval[] array)
+	void mutates swap(key1, key2)
+	String toFullString()
+
+Array
+	jsval first()
+	jsval second()
+	jsval last()
+	jsval penultimate()
+	Boolean contains(jsval value) Does this array contain this value?
+	Boolean equals(jsval[] compared)
+	Boolean isEmpty()
+	mutates this append(jsval value)
+	mutates this push(jsval value) Alias for append
+	mutates this insert(jsval value, Integer location)
+	mutates jsval pop()
+	mutates this removeElement(jsval element) Removes all instances of element 
+		from array
+	jsval[] copy()
+	jsval[] removeDuplicates()
+	jsval[] rest()
 	String toString()
+
+String
+	Integer toInt()
+	Float toFloat()
+	String dropLastChar()
+	String dropFirstChar()
+	String[]* splitMultiple(Character firstCharToSplitBy, ..., 
+		Character lastCharToSplitBy)
+
+Math:
+	mutates float random()
+	mutates void seedrandom(jsval seed)
+
+-------------------------------------------------------------------------------
+(objects)
 
 Edge:
 	Boolean isEdgeBetween(Node from, Node to)
 	String toString()
 
 Node:
-	iterate
-	Array adjacents() - Get all adjacent edges.
+	mutates ? iterate(?) ?
+	Node[] adjacents() - Get all adjacent nodes.
 	jsval get(String key)
-	void set(String key, jsval value)
+	mutates void set(String key, jsval value)
 	String name()
-	Edge addAcyclicEdge(
-	Edge addCyclicEdge
-	Edge addEdge
-	Boolean isLeaf
+	mutates Edge addAcyclicEdge(?)
+	mutates Edge addCyclicEdge(?)
+	mutates Edge addEdge(?)
+	Boolean isLeaf()
 	Boolean isConnected(Node a, Node b)
 	Boolean hasAdjacentNode(String name)
-	int edgeCount()
+	Integer edgeCount()
+	String toString()
+
+Graph:
+	Boolean isEdgeBetween(Node from, Node to)
+	Edge edgeBetween(Node from, Node to)
+	Object hashGraph()
+	Node nodeWithName(String name)
+	Node[] nodes()
+	Node[] shortestPath(Node from, Node to)
+	Node[] randomWalk(Node from, Node to)
 	String toString()
 
 Generator:
 	String generate()
 	static Generator create(jsval base, function generation)
 
-Math:
-	float random()
-	void seedrandom(jsval seed)
+Polynomial:
+	mutates void addTerm(Integer coefficient, Integer exponent)
+	mutates void subtractTerm(Integer coefficient, Integer exponent)
+	String toString()
+	Polynomial addPoly(Polynomial poly2)
+
+REPL:
+	void run()
+	void exit()
+
+Shell:
+	void print(String value)
+	void run()
+	void exit()
+
+Test:
+	void run()
+
+TestSet:
+	mutates void addTest(String name, function test)
+	void run()
+	void urun()
+
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+{values}
+
+The types of values that are supposed to be accessed from an object.
+
+-------------------------------------------------------------------------------
+(objects)
+
+Edge:
+	Node from
+	Node to
+	Integer[] weight
+
+Node:
+	jsval data (see also Node.get())
+	Edge[] edgelist
+
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+{functions}
+
+These are top-level functions not assigned to a specific object. They are
+as methods, except they cannot be static, and mutates changes to as follows:
+
+<mutates>: mutates <parameter name || [parameter names]>
+
+-------------------------------------------------------------------------------
+(common)
+
+common:
+	Boolean isInAt(jsval value, jsval[] array)
+	void cross(jsval[] collections, function callback, jsval thisArg, 
+		jsval[] elements)
+
+files:
+	String get(String filepath) Gets the contents of the file specified at path
+		relative to /jslibs/.
+	Boolean isFileType(String filepath, Sting type)
+
+console:
+	void print(String string)
+	void println(String string)
+	void printline() Prints 80 dashes and a newline.
+	void printval(String name, jsval value, Boolean toFullString)
+	String readln()
+	String getCommand(String input)
+	String getAllParameters(String input)
+
+classes:
+	Object inherit(Object prototype)
+	void mutates o extend(Object o, Object firstExtension, ..., 
+		Object lastExtension)
+
+-------------------------------------------------------------------------------
+(objects)
+
+Generator:
+	mutates genmap Generator createGeneratorFromFile(String filename, Object
+		genmap)
+	mutates genmap Generator addGeneratingGraph(String[][] graphmap, Object 
+		genmap
+
+Polynomial:
+	Polynomial subtractPoly(Polynomial poly1, Polynomial poly2)
+	Polynomial multiplyPoly(Polynomial poly1, Polynomial poly2)
