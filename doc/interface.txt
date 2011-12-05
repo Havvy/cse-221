@@ -1,34 +1,40 @@
+Global:
+	String get(String filepath) Gets the contents of the file specified at path
+		relative to /jslibs/.
+
 Graph:
-	shortestPath
-	isEdgeBetween
-	edgeBetween
-	hashGraph
-	nodeWithName
-	nodes
-	toString
+	Boolean isEdgeBetween(Node from, Node to)
+	Edge edgeBetween(Node from, Node to)
+	Object hashGraph()
+	Node nodeWithName(String name)
+	Array nodes()
+	Array shortestPath(Node from, Node to)
+	Array randomWalk(Node from, Node to)
+	String toString()
 
 Edge:
-	isEdgeBetween
-	toString
+	Boolean isEdgeBetween(Node from, Node to)
+	String toString()
 
 Node:
-	iterate (avoid..)
-	adjacents - Get all adjacent edges.
-	get
-	set
-	name
-	addAcyclicEdge
-	addCyclicEdge
-	addEdge
-	isLeaf
-	isConnected
-	hasAdjacentNode
-	edgeCount
-	toString
+	iterate
+	Array adjacents() - Get all adjacent edges.
+	jsval get(String key)
+	void set(String key, jsval value)
+	String name()
+	Edge addAcyclicEdge(
+	Edge addCyclicEdge
+	Edge addEdge
+	Boolean isLeaf
+	Boolean isConnected(Node a, Node b)
+	Boolean hasAdjacentNode(String name)
+	int edgeCount()
+	String toString()
 
 Generator:
-	generate
+	String generate()
+	static Generator create(jsval base, function generation)
 
 Math:
-	random
-	seedrandom
+	float random()
+	void seedrandom(jsval seed)

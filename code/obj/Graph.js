@@ -61,6 +61,27 @@ var Graph = {
 		}
 	},
 	
+	/**
+	 * Randomly walks through the graph, ignoring edge weights.
+	 * @param from
+	 * @param to
+	 * @return Array of nodes visited in order. May contain duplicates.
+	 */
+	randomWalk : function(from, to) {
+		var walk = [from];
+		let currentNode = from;
+		
+		while (currentNode !== to) {
+			let adjacents = currentNode.adjacents();
+			let nextNode = adjacents[(Math.floor(Math.random() * adjacents.length))];
+			walk.push(nextNode);
+			currentNode = nextNode;
+		}
+		
+		return walk;
+	}
+			
+	
 	// BOOLEANS
 	
 	isEdgeBetween : function (from, to) {
