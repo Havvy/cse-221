@@ -22,7 +22,9 @@ var Generator = {
 				return base;
 			},
 			generate : function (seed) {
-				Math.seedrandom(seed);
+				if (seed) {
+					Math.seedrandom(seed);
+				}
 				return generator.apply(this.base())
 			},
 			toString : function () {
