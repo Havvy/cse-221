@@ -6,4 +6,6 @@ Exec('../code/obj/Graph.js');
 Exec('../code/obj/Generator.js');
 
 Math.seedrandom('test');
-createGeneratingGraphFromFile("dungeon");
+dungeon = createGeneratorFromFile("nonUnique", {});
+
+println(dungeon.generate());

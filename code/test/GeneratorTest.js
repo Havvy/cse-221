@@ -39,7 +39,6 @@ let(gen = new TestSet(['obj/Generator.js'])) {
 		createGeneratorFromFile('complexTest', g);
 		
 		let generated = g['complexTest'].generate("_");
-		printval("gen", generated);
 		
 		return "cow";
 	});
@@ -49,7 +48,6 @@ let(gen = new TestSet(['obj/Generator.js'])) {
 		createGeneratorFromFile('complexTest', g);
 		
 		let generated = g['complexTest'].generate("Bob");
-		printval("gen", generated);
 		
 		return (generated === "chickenaStrbStr");
 	});
@@ -59,7 +57,6 @@ let(gen = new TestSet(['obj/Generator.js'])) {
 		createGeneratorFromFile('complexTest', g);
 		
 		let generated = g['complexTest'].generate(NOESCAPE);
-		printval("gen", generated);
 		
 		return (generated === "aStrbStr");
 	});

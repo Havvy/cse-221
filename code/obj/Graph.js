@@ -126,11 +126,11 @@ var Graph = {
 	
 	toString : function () {
 		var ret = "";
-		this.forEach(function (node, ix, graph) {			
+		this.forEach(function (node, ix, graph) {
 			ret += node.name() + ": " + node.data + "\n";
 			
 			node.edgelist.forEach(function (edge, jx, adjacents) {
-				ret += node.name() + "-" + (edge.weight || "") + "->" + edge.to.name() + "\n";
+				ret += '\t' + node.name() + "-" + (edge.weight || "") + "->" + edge.to.name() + "\n";
 				if (edge.weight) {
 					for (let ix = 0; ix < edge.weight.length; ix++) {
 						ret += (typeof edge.weight[ix]) + " ";

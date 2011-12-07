@@ -29,7 +29,7 @@ var Node = function (parameters) {
 	}
 	
 	this.data = parameters.data || {};
-	this.identifier = this.data.name || parameters.name || ("anonymous" + counter++);
+	this.identifier = this.data.name || parameters.name || ("anon" + counter++);
 };
 
 extend(Node.prototype, {

@@ -40,21 +40,21 @@ var Generator = {
  */
 var addGeneratingGraph = function (graphtable, genmap) {
 	printline();
-	printval("TABLE", graphtable);
-	printval("MAP", genmap, true);
+	//printval("TABLE", graphtable);
+	//printval("MAP", genmap, true);
 	
 	let start = new Node({name:"Start"}), end = new Node({name:"End"});
 	
 	function createNodes(graphtable, genmap) {
-		println("Creating nodes from graphtable");
+		println("3a. Creating nodes from graphtable");
 		return graphtable.map(function (line) {
 			return line.map(function map2(node) {
 			
-				printval("\tNODE", node);
+				//printval("\tNODE", node);
 				
 				// Catch the initial node.
 				if (node === "GENGRAPH") {
-					println("\t\tNode is GENGRAPH!");
+					//println("\t\tNode is GENGRAPH!");
 					return start;
 				} else {
 					//println("\t\tNode not GENGRAPH");
@@ -62,7 +62,7 @@ var addGeneratingGraph = function (graphtable, genmap) {
 				
 				//If the node is a number, coerce it to a number.
 				if (node.toInt().toString() === node) {
-					println("\t\tNode is a number.");
+					//println("\t\tNode is a number.");
 					return node.toInt();
 				} else {
 					//println("\t\tNode is not a number.");
@@ -70,7 +70,7 @@ var addGeneratingGraph = function (graphtable, genmap) {
 				
 				//If the node is E, then it is the end.
 				if (node === "E") {
-					println("\t\tNode is the end.");
+					//println("\t\tNode is the end.");
 					return end;
 				} else {
 					//println("\t\tNode is not the end.");
@@ -78,18 +78,23 @@ var addGeneratingGraph = function (graphtable, genmap) {
 				
 				//If the beginning starts with a quote mark, it's character data.
 				if (node[0] === '"') {
-					println("\t\tNode is a string.");
+					//println("\t\tNode is a string.");
 					return node.dropLastChar().dropFirstChar();
 				} else {
 					//println("\t\tNode is not a string.");
 				}
 				
-				println("\t\tTherefore, node is another generator of some type.");
+				printval("\tNODE", node);
+				println("\t\tNode is another generator of some type.");
 				// Otherwise, is a generator of its own.
 				if (!genmap.hasOwnProperty(node)) {
-					printval("genmap", genmap, true);
-					printval("node", node);
+					printval("\t\tgenmap", genmap, true);
+					printval("\t\tnode", node);
 					genmap[node] = createGeneratorFromFile(node, genmap);
+					printval("\t\tGENERATOR END", genmap[node]);
+				} else {
+					printval("\t\tgenmap", genmap, true);
+					printval("\t\tnode", node);
 				}
 				return genmap[node];
 			})
@@ -107,37 +112,36 @@ var addGeneratingGraph = function (graphtable, genmap) {
 		}
 		
 		graph.push(end);
-		printval("Graph", graph);
+		printval("4a. Graph", graph);
 		
 		for (let ix = 0; ix < nodes.length; ix++) {
 			let node = graph[ix];
-			printval("line", nodes[ix]);
+			printval("4b. line", nodes[ix]);
 			printval("\tnode", node);
 			for (let jx = 1; jx < nodes[ix].length; jx++) {
 				let nextVal = nodes[ix][jx]
 				
-				printval("\tconstructor", nextVal.constructor === Generator);
 				if (nextVal.constructor === Generator) {
+					printval("\t4c. isGenerator", true);
 					let g = nextVal;
-					nextVal = new Node({data : g, name : "gen"})
+					//nextVal = new Node({data : g, name : "gen"})
 				}
 				
 				printval("\tnextVal", nextVal);
 				if (typeof nextVal=== "number") {
 					println("\tValue is a number.");
-					graph[ix].addAcyclicEdge(graph[nextVal]);
+					node.addAcyclicEdge(graph[nextVal]);
+					println("\tAdding edge between " + node + " & " + graph[nextVal]);
 				} else if (nextVal === end) {
-					println("\tValue is the end.");
-					printval("\tnode", node);
 					node.addAcyclicEdge(end);
+					println("\tAdding edge between " + node + " & " + end);
 				} else {
-					println("\tValue is a GENERATOR.");
-					printval("\tnextVal", nextVal);
 					let newNode = new Node({data : nextVal})
 					printval("\tnewNode", newNode);
 					graph.push(newNode);
 					node.addAcyclicEdge(newNode);
-					node = nextVal;
+					println("\tAdding edge between " + node + " & " + newNode);
+					node = newNode;
 				}
 			}
 		}
@@ -146,14 +150,11 @@ var addGeneratingGraph = function (graphtable, genmap) {
 		return extend(graph, Graph);
 	}
 	
-	//d6 := Math.ceil(Math.random() * 6);
-	//dN := Math.ceil(Math.random() * N);
-	
 	let nodes = createNodes(graphtable, genmap);
 	printline();
-	printval("nodes", nodes);
+	printval("3. nodes", nodes);
 	let graph = createGraph(nodes);
-	printval("final graph", graph);
+	printval("4. final graph", graph);
 	let generator = Generator.create(graph, function () {
 		var theGeneration = ""; 
 		let currentNode = start;
@@ -170,10 +171,7 @@ var addGeneratingGraph = function (graphtable, genmap) {
 				}
 			}
 			currentNode = adjacents[Math.floor(Math.random() * adjacents.length)];
-			
-			
 		}
-		printval("string", theGeneration);
 		printline();
 		return theGeneration;
 	});
@@ -194,14 +192,11 @@ var createGeneratorFromFile = function (filename, genmap) {
 		//"GENLIST" : addGeneratingList
 	};
 	printval("filename", filename);
-	let file = get("../data/gen/" + filename + ".gen");
-	printline();
-	printval("file", file);
-	printline();
+	let file = get("gen/" + filename + ".gen"); //show Bob this weird bug.  :P
 	let graphtable = file.splitMultiple('\n', '|');
-	printval("graphtable", graphtable);
+	printval("1. graphtable", graphtable);
 	printval("genmap", genmap, true);
-	printval("graphtable[0][0]", graphtable);
+	printval("2. graphtable[0][0]", graphtable[0][0]);
 	let generator = fns[graphtable[0][0]](graphtable, genmap);
 	genmap[filename] = generator;	
 	return generator;
