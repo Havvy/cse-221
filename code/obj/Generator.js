@@ -57,7 +57,7 @@ var addGeneratingGraph = function (graphtable, genmap) {
 					println("\t\tNode is GENGRAPH!");
 					return start;
 				} else {
-					println("\t\tNode not GENGRAPH");
+					//println("\t\tNode not GENGRAPH");
 				}
 				
 				//If the node is a number, coerce it to a number.
@@ -65,7 +65,7 @@ var addGeneratingGraph = function (graphtable, genmap) {
 					println("\t\tNode is a number.");
 					return node.toInt();
 				} else {
-					println("\t\tNode is not a number.");
+					//println("\t\tNode is not a number.");
 				}
 				
 				//If the node is E, then it is the end.
@@ -73,7 +73,7 @@ var addGeneratingGraph = function (graphtable, genmap) {
 					println("\t\tNode is the end.");
 					return end;
 				} else {
-					println("\t\tNode is not the end.");
+					//println("\t\tNode is not the end.");
 				}
 				
 				//If the beginning starts with a quote mark, it's character data.
@@ -81,7 +81,7 @@ var addGeneratingGraph = function (graphtable, genmap) {
 					println("\t\tNode is a string.");
 					return node.dropLastChar().dropFirstChar();
 				} else {
-					println("\t\tNode is not a string.");
+					//println("\t\tNode is not a string.");
 				}
 				
 				println("\t\tTherefore, node is another generator of some type.");
@@ -193,7 +193,7 @@ var createGeneratorFromFile = function (filename, genmap) {
 		//"" : function () { return "ERROR" }
 		//"GENLIST" : addGeneratingList
 	};
-	printval("file2", filename, true);
+	printval("filename", filename);
 	let file = get("../data/gen/" + filename + ".gen");
 	printline();
 	printval("file", file);

@@ -32,33 +32,33 @@ extend(String.prototype, {
 	
 	// Other...
 	splitMultiple : function () {
-		printline();
+		//printline();
 		Exec('../code/common/console.js');
-		printval("arglen", arguments.length);
+		//printval("arglen", arguments.length);
 		if (arguments.length !== 0) {
 			let args = [];
 			let temp = this;
 			
-			printval("args", args);
-			printval("temp", temp);
-			printval("type of temp", typeof temp);
-			printval("temp", temp, true);
-			printval("arguements", arguments, true);
+			//printval("args", args);
+			//printval("temp", temp);
+			//printval("type of temp", typeof temp);
+			//printval("temp", temp, true);
+			//printval("arguements", arguments, true);
 			
 			// Coerce arguments into an array.
 			for (let ix = 0; ix < arguments.length; ix++) {
 				args.push(arguments[ix]);
 			}
 			
-			printval('args', args);
-			printval('this', temp);
+			//printval('args', args);
+			//printval('this', temp);
 			
 			temp = temp.split(args.first());
 			for (let ix = 0; ix < temp.length; ix++) {
 				temp[ix] = String.prototype.splitMultiple.apply(temp[ix], args.rest());
 			}
 			
-			printval("temp", temp);
+			//printval("temp", temp);
 			return temp;
 		} else {
 			return this.toString(); //for some reason, toString() is required here.

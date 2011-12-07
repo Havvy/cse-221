@@ -28,14 +28,13 @@ let(gen = new TestSet(['obj/Generator.js'])) {
 		
 		let generated = g['simpleTest'].generate("_");
 		
-		printline();
-		printline();
-		printline();
-		
 		return (generated === "aStrbStr");
 	});
 	
+	
 	gen.addTest("Generate complex GenGraph 1", function () {
+		printline();
+		printline();
 		let g = {};
 		createGeneratorFromFile('complexTest', g);
 		
@@ -71,9 +70,9 @@ let(gen = new TestSet(['obj/Generator.js'])) {
 		printline();
 	
 		let g = {};
-		createGeneratorFromFile('anotherTest', g);
+		createGeneratorFromFile('chickenTest', g);
 		
-		let generated = g['anotherTest'].generate("Bob");
+		let generated = g['chickenTest'].generate("Bob");
 		printval("gen", generated, true);
 		
 		return (generated === "chickenaStrbStr");
