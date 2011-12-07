@@ -28,7 +28,55 @@ let(gen = new TestSet(['obj/Generator.js'])) {
 		
 		let generated = g['simpleTest'].generate("_");
 		
+		printline();
+		printline();
+		printline();
+		
 		return (generated === "aStrbStr");
+	});
+	
+	gen.addTest("Generate complex GenGraph 1", function () {
+		let g = {};
+		createGeneratorFromFile('complexTest', g);
+		
+		let generated = g['complexTest'].generate("_");
+		printval("gen", generated);
+		
+		return "cow";
+	});
+	
+	gen.addTest("Generate complex GenGraph. 3", function () {
+		let g = {};
+		createGeneratorFromFile('complexTest', g);
+		
+		let generated = g['complexTest'].generate("Bob");
+		printval("gen", generated);
+		
+		return (generated === "chickenaStrbStr");
+	});
+	
+	gen.addTest("Generate complex GenGraph 2.", function () {
+		let g = {};
+		createGeneratorFromFile('complexTest', g);
+		
+		let generated = g['complexTest'].generate(NOESCAPE);
+		printval("gen", generated);
+		
+		return (generated === "aStrbStr");
+	});
+	
+	gen.addTest("Generate chicken GenGraph 3.", function () {
+		printline();
+		printline();
+		printline();
+	
+		let g = {};
+		createGeneratorFromFile('anotherTest', g);
+		
+		let generated = g['anotherTest'].generate("Bob");
+		printval("gen", generated, true);
+		
+		return (generated === "chickenaStrbStr");
 	});
 
 	//gen.run();

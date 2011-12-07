@@ -79,7 +79,7 @@ var Graph = {
 		}
 		
 		return walk;
-	}
+	},
 			
 	
 	// BOOLEANS
@@ -130,7 +130,7 @@ var Graph = {
 			ret += node.name() + ": " + node.data + "\n";
 			
 			node.edgelist.forEach(function (edge, jx, adjacents) {
-				ret += node.name() + "-" + (edge.weight || "") + "->" + edge.destination.name() + "\n";
+				ret += node.name() + "-" + (edge.weight || "") + "->" + edge.to.name() + "\n";
 				if (edge.weight) {
 					for (let ix = 0; ix < edge.weight.length; ix++) {
 						ret += (typeof edge.weight[ix]) + " ";

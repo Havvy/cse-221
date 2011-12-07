@@ -17,23 +17,20 @@ note: I'll put a copy in the main folder AND the code folder so you can find it 
 PROJECT 6 (incomplete)
 
 
-Open command prompt, cd yourdrive: ../jslibs/bin/ then run jshost ../code/obj/routeLoad.js to see what we got working.
+Open command prompt, cd yourdrive: ../jslibs/bin/ then run jshost ../code/obj/routeLoad.js.
 
-To see the code that does most of the work, open Node.js in notepad/++/etc.
+To see our tests, run jshost../code/test/NodeTest.js
 
-Havvy did not give me a copy of the test data for this project, and his USB drive broke this evening. Them's the breaks.
+The backends doing most of the work are /code/obj/Node.js and /code/obj/Graph.js.
 
-On the plus side, I have the latest version here. On the down side, it's very incomplete. All we managed to accomplish was getting it to read in airport data (1 and 2 way) and made a function to print them as a list. 
-
-We're hoping to talk to you Monday about how to make it... ya know, do stuff. We wrestled with it for a couple hours and eventually ran out of time (and left more confused than we did going into it).
-
+Everything seems to work correctly! Instead of reading in the test data, I made an interface to enter the start, end, and desired weight(s). 
+It's really sloppy and I could make it look nicer, but it works, and we gotta focus on the next project.
 
 
+----------------------------------------------------------------------------------------------------
 
 
-Output of routeLoad.js:
-
-G:\jslibs\bin>jshost ..\code\routeLoad.js
+Output of print(airports);
 
 
 From [Cost, Time] To
@@ -184,5 +181,113 @@ EUG-[231, 214]->DEN
 EUG-[124, 125]->SEA
 
 
+------------------------------------------------------------------------------------------
 
-G:\jslibs\bin>
+Output of routeLoad.js
+
+
+G:\js\bin>jshost ..\code\prog\routeLoad.js
+
+
+Welcome to the BobHavvy Trip Planning simulator.
+To quit at any time, enter q at the first question.
+To see a list of airports, enter l.
+To see all airports and routes, enter w.
+
+
+Where are you starting from?: pdx
+Where are you trying to go?: atl
+What's more important to you, time, money, or luxury?: money
+On a budget? Hope you don't mind screaming kids.
+PDX --> PHX --> ATL, and it will only take 303 units of currency.
+
+
+Where are you starting from?: pdx
+Where are you trying to go?: atl
+What's more important to you, time, money, or luxury?: time
+In a hurry eh? Then this is the route for you.
+PDX --> ATL, and it will only take 336 units of time.
+
+
+Where are you starting from?: vuo
+Where are you trying to go?: DFW
+What's more important to you, time, money, or luxury?: money
+On a budget? Hope you don't mind screaming kids.
+VUO --> HIO --> PDX --> PHX --> DFW, and it will only take 406 units of currency
+.
+
+
+Where are you starting from?: vuo
+Where are you trying to go?: dfw
+What's more important to you, time, money, or luxury?: time
+In a hurry eh? Then this is the route for you.
+VUO --> HIO --> PHX --> DFW, and it will only take 346 units of time.
+
+
+Where are you starting from?: pdx
+Where are you trying to go?: dfw
+What's more important to you, time, money, or luxury?: money
+On a budget? Hope you don't mind screaming kids.
+PDX --> PHX --> DFW, and it will only take 288 units of currency.
+
+
+Where are you starting from?: pdx
+Where are you trying to go?: dfw
+What's more important to you, time, money, or luxury?: time
+In a hurry eh? Then this is the route for you.
+PDX --> HIO --> PHX --> DFW, and it will only take 350 units of time.
+
+
+Where are you starting from?: vuo
+Where are you trying to go?: mli
+What's more important to you, time, money, or luxury?: money
+On a budget? Hope you don't mind screaming kids.
+VUO --> HIO --> PDX --> MSP --> DEN --> MLI, and it will only take 552 units of
+currency.
+
+
+Where are you starting from?: vuo
+Where are you trying to go?: mli
+What's more important to you, time, money, or luxury?: time
+In a hurry eh? Then this is the route for you.
+VUO --> HIO --> PDX --> ORD --> MLI, and it will only take 456 units of time.
+
+
+Where are you starting from?: pdx
+Where are you trying to go?: jfk
+This is not an airport recognized by this program. Please start again.
+
+
+Where are you starting from?: puw
+Where are you trying to go?: far
+What's more important to you, time, money, or luxury?: luxury
+More money than God and all the time in the world? Here you go, also I hate you.
+
+PUW --> SEA --> BOI --> PHX --> HIO --> PDX --> ORD --> MLI --> DEN --> FAR
+is on average the most expensive, time consuming route.
+
+
+Where are you starting from?: eug
+Where are you trying to go?: puw
+What's more important to you, time, money, or luxury?: money
+On a budget? Hope you don't mind screaming kids.
+EUG --> SEA --> PUW, and it will only take 234 units of currency.
+
+
+Where are you starting from?: eug
+Where are you trying to go?: oma
+What's more important to you, time, money, or luxury?: time
+In a hurry eh? Then this is the route for you.
+EUG --> DEN --> OMA, and it will only take 359 units of time.
+
+
+Where are you starting from?: eug
+Where are you trying to go?: koa
+What's more important to you, time, money, or luxury?: money
+On a budget? Hope you don't mind screaming kids.
+No such route exists. Maybe you can hitchhike there?
+
+Where are you starting from?: q
+Thank you. Now I can rest.
+
+G:\js\bin>
