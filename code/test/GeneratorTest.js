@@ -44,6 +44,7 @@ let(gen = new TestSet(['obj/Generator.js'])) {
 	gen.addTest("Generate complex GenGraph. 3", function () {
 		let g = {};
 		createGeneratorFromFile('complexTest', g);
+		
 		let generated = g['complexTest'].generate("Bob");
 		
 		return (generated === "chickenaStrbStr");
@@ -52,33 +53,34 @@ let(gen = new TestSet(['obj/Generator.js'])) {
 	gen.addTest("Generate complex GenGraph 2.", function () {
 		let g = {};
 		createGeneratorFromFile('complexTest', g);
+		
 		let generated = g['complexTest'].generate(NOESCAPE);
 		
 		return (generated === "aStrbStr");
 	});
 	
 	gen.addTest("Generate chicken GenGraph 3.", function () {
+	
 		let g = {};
 		createGeneratorFromFile('chickenTest', g);
+		
 		let generated = g['chickenTest'].generate("Bob");
 		
 		return (generated === "chickenaStrbStr");
 	});
 	
-	gen.addTest("Generate the set setTest.gen", function () {
+	gen.addTest("setTest.gen", function () {
 		let g = {};
 		createGeneratorFromFile('setTest', g);
-		let item = g['setTest'].generate("Bob");
-		
-		return (item === "c");
+		let c = g['setTest'].generate("Bob");
+		return c = "c";
 	});
 	
-	gen.addTest("Generate the list listTest.gen", function () {
+	gen.addTest("listTest.gen", function () {
 		let g = {};
 		createGeneratorFromFile('listTest', g);
-		let item = g['listTest'].generate("Bob");
-		
-		return (item === "c");
+		let generated = g['listTest'].generate("_");
+		return generated === "aStrbStrcStr";
 	});
 
 	//gen.run();

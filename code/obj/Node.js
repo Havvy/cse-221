@@ -18,8 +18,7 @@ extend(Edge.prototype, {
 });
 
 var Node = function (parameters) {
-
-	var counter = counter || 0;
+	Node.counter = Node.counter || 0;
 	
 	this.edgelist = [];
 	if (parameters.adjacent && parameters.adjacent.length) {
@@ -29,7 +28,7 @@ var Node = function (parameters) {
 	}
 	
 	this.data = parameters.data || {};
-	this.identifier = this.data.name || parameters.name || ("anon" + counter++);
+	this.identifier = this.data.name || parameters.name || ("anon" + Node.counter++);
 };
 
 extend(Node.prototype, {
