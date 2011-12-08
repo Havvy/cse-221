@@ -176,7 +176,11 @@ Generator:
 	mutates genmap Generator createGeneratorFromFile(String filename, Object
 		genmap)
 	mutates genmap Generator addGeneratingGraph(String[][] graphmap, Object 
-		genmap
+		genmap)
+	mutates genmap Generator addGeneratingList(String[][] graphmap, Object
+		genmap)
+	mutates genmap Generator addGeneratingSet(String[][] graphmap, Object
+		genmap)
 
 Polynomial:
 	Polynomial subtractPoly(Polynomial poly1, Polynomial poly2)
