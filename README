@@ -16,7 +16,6 @@ The folder called common holds a bunch of common functions and
 		common:  An ad-hoc library.
 		test: The tests for the various objects
 		obj: The data-structures themselves are stored here.
-		wip: "Work in progress" (uncategorized code)
 
 		Also in the code folder is main.js. It is a shell from which you can 
 		access the rest of the files. See /doc/main.txt for more.
@@ -34,6 +33,30 @@ Programs By Assignment:
 [6] Graph (prog routeLoad)
 [7] Hash (run hashbrowns)
 [8] Polynomial (shell poly)
-[9] Our Choice (n/a)
+[9] Procedurally Generated Dungeon Descriptions (run PGDD)
 
-There are other files in the code folder. They are for testing out various language features.
+There are other files in the code folder. They are for testing out various language 
+features or other libraries.
+
+---------------------------------------------------------------------------------------
+
+Procedurally Generated Dungeon Descriptions:
+
+User input is as simple as saying 'yes' or 'no'. ('y' and 'n' work too).
+
+Our current graphs (input are simple in comparison to what kind of graphs could be created.
+
+Files:
+	/code/prog/PGDD.js (the actual program)
+	/code/obj/Node.js (bugfixes)
+	/code/obj/Graph.js (bugfixes)
+	/code/obj/Generator.js (new object & associated functions)
+	/data/gen/*.gen (our data, a CSV of two comma types)
+	/code/test/GeneratorTest.js (more tests added to the test suite)
+	
+Futhermore, the following files were modified:
+	/data/Interface.txt (documentation, added)
+	/code/common/files.js (get strips ASCII 13 [Carriage Returns])
+	/code/common/string.js
+	/code/common/array.js
+	cleanup.(bat|sh) (Removes jsxdr files lowering overall filesize)
