@@ -60,6 +60,6 @@ TestSet.prototype.urun = function () {
 };
 
 TestSet.prototype.addTest = function (name, test) {
+	test.name = name;
 	this.tests.append(test);
-	this.tests[this.tests.length - 1].name = name;
 };
