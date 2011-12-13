@@ -40,7 +40,7 @@ let (main = {}) {
 	};
 	
 	main.runSingleTest = function (testname) {
-		testname += "Test.js";
+		testname += ".test.js";
 		
 		if (main.listScriptsInFolder('test').contains(testname)) {
 			try {

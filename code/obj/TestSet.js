@@ -16,6 +16,7 @@ TestSet.prototype.run = function () {
 	});
 	} catch (e) {
 		println("Unable to run tests for " + this.name);
+		println("Required files cannot be opened.");
 		return;
 	}
 
